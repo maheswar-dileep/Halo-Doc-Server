@@ -1,0 +1,5 @@
+.env
+/keys/**
+FIREBASE.json
+/node_modules
+/build
