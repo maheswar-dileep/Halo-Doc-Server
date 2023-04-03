@@ -1,6 +1,6 @@
-import mongoose, { Schema, model } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
-const userSchema = new Schema({
+const adminSchema = new Schema({
     name: {
         type: String,
         required: true
@@ -9,12 +9,11 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-    profileURL: {
+    password: {
         type: String,
         required: true
     }
 });
 
-
-const userModel = mongoose.model('user', userSchema);
-export default userModel; 
+const adminModel = mongoose.model('admin', adminSchema);
+export default adminModel;

@@ -1,5 +1,9 @@
 import USER from "./userSchema.js";
+import ADMIN from './adminSchema.js'
+import DOCTOR from './doctorSchema.js'
 
 export  {
-    USER
+    USER,
+    ADMIN,
+    DOCTOR
 };

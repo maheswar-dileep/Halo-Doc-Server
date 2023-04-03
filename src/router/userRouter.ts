@@ -1,11 +1,14 @@
 import express from 'express'
 import * as controller from '../controller/userController.js'
+import auth from '../middlewares/auth.js';
 
 const router = express.Router();
 
-router.route('/server').get(controller.server)
+router.route('/signup').post(controller.signup); //user signup 
+router.route('/login').post(controller.login); // user login 
+router.route('/get-user-info').post(auth, controller.getUserInfo)
 
-router.route('/signup').post(controller.signup);
-router.route('/signup/google').post(controller.googleSignup);
+router.route('/home').get(auth, controller.home)
+
 
 export default router
