@@ -29,6 +29,15 @@ const doctorSchema = new Schema({
         type: String,
         required: true
     },
+    dob: {
+        type: String,
+        required: true
+    },
+    department: {
+        type: String,
+        required: true
+    }
+    ,
     AuthEmail: {
         type: String,
         required: true

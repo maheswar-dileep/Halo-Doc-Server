@@ -1,6 +1,13 @@
 import mongoose, { Schema, model } from 'mongoose';
 
-const userSchema = new Schema({
+interface IUser {
+    name: string,
+    email: string,
+    profileURL: string,
+    blocked: boolean
+}
+
+const userSchema = new Schema<IUser>({
     name: {
         type: String,
         required: true
@@ -12,9 +19,13 @@ const userSchema = new Schema({
     profileURL: {
         type: String,
         required: true
+    },
+    blocked: {
+        type: Boolean,
+        required: true
     }
 });
 
 
-const userModel = mongoose.model('user', userSchema);
+const userModel = mongoose.model<IUser>('user', userSchema);
 export default userModel; 

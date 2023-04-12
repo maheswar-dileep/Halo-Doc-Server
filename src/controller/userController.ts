@@ -3,7 +3,6 @@ import { Request, Response } from "express";
 import { USER } from "../model/schema/export.js";
 import { verifyFirebaseToken } from "../firebase/firebase.js";
 import jwt from 'jsonwebtoken'
-import auth from '../middlewares/auth.js'
 import RequestDefenition from "../defenitions.js";
 
 dotenv.config();
@@ -20,7 +19,7 @@ export const signup = async (req: Request, res: Response) => {
     let userData = {
       name: user.displayName,
       email: user.email,
-      profileURL: user.photoURL ? user.photoURL : false,
+      profileURL: user.photoURL ? user.photoURL : false
     };
 
     /**
@@ -59,11 +58,9 @@ export const login = async (req: Request, res: Response) => {
 
     if (user) {
 
+      const userData = await USER.findOne({ email: user?.email })
 
-
-      const userData = await USER.findOne({ email: user.email })
-      console.log(userData)
-      const _id = userData._id
+      const _id = userData?._id
       const token = jwt.sign({ id: _id }, process.env.JWT_SECRET, {
         expiresIn: '1d'
       })

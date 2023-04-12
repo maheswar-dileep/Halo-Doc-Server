@@ -5,6 +5,8 @@ import morgan from "morgan";
 import cookieParser from 'cookie-parser'
 import userRouter from './router/userRouter.js'
 import adminRouter from './router/adminRouter.js'
+import doctorRouter from './router/doctorRouter.js'
+import router from './router/router.js'
 
 const app = express();
 dotenv.config();
@@ -27,8 +29,10 @@ app.use(cors());
  *API Routes]
  */
 
+app.use('/api', router)
 app.use("/api/user", userRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/doctor", doctorRouter);
 
 /*
  *Start Server

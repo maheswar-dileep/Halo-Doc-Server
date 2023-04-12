@@ -5,6 +5,7 @@ import RequestDefenition from '../defenitions.js';
 
 dotenv.config()
 
+
 const auth = async (req: RequestDefenition, res: Response, next: NextFunction) => {
     try {
         console.log(req.headers)
