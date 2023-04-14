@@ -1,10 +1,9 @@
-import { Request } from "express";
+import { Request } from 'express';
 
 interface RequestDefenition extends Request {
-    user: {
-        id: string
-    }
+  user: {
+    id: string;
+  };
 }
 
 export default RequestDefenition;
-

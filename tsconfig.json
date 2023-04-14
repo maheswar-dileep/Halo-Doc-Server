@@ -6,5 +6,5 @@
     "sourceMap": true,
     "outDir": "build"
   },
-  "include": ["src/*/"]
+  "include": ["src/*/", "./.eslintrc.cjs"]
 }

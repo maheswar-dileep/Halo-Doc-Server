@@ -1,36 +1,36 @@
-import mongoose, { Schema } from 'mongoose'
+import mongoose, { Schema } from 'mongoose';
 
 const blogSchema = new Schema({
-    title: {
+  title: {
+    type: String,
+    required: true,
+  },
+  content: {
+    type: String,
+    required: true,
+  },
+  imageURL: {
+    type: String,
+    required: true,
+  },
+  comment: {
+    type: {
+      userName: {
         type: String,
-        required: true
-    },
-    content: {
+        required: true,
+      },
+      comment: {
         type: String,
-        required: true
-    },
-    imageURL: {
+        required: true,
+      },
+      profileURL: {
         type: String,
-        required: true
+        required: true,
+      },
     },
-    comment: {
-        type: {
-            userName: {
-                type: String,
-                required: true
-            },
-            comment: {
-                type: String,
-                required: true
-            },
-            profileURL: {
-                type: String,
-                required: true
-            }
-        },
-        required: false
-    }
-})
+    required: false,
+  },
+});
 
 const blogModel = mongoose.model('blog', blogSchema);
 export default blogModel;
