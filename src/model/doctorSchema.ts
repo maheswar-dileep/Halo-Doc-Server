@@ -37,15 +37,15 @@ const doctorSchema = new Schema({
     type: String,
     required: true,
   },
-  AuthEmail: {
+  workTime: {
+    type: String,
+    required: true,
+  },
+  fees: {
     type: String,
     required: true,
   },
   password: {
-    type: String,
-    required: true,
-  },
-  AuthPhone: {
     type: String,
     required: true,
   },

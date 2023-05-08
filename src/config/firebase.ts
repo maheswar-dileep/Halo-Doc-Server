@@ -12,7 +12,7 @@ const verifyFirebaseToken = async ({ idToken }: { idToken: string }) => {
   // eslint-disable-next-line no-useless-catch
   try {
     // uid
-    const { uid } = (await getAuth().verifyIdToken(idToken)).uid;
+    const { uid } = await getAuth().verifyIdToken(idToken);
 
     // user data
     return await getAuth().getUser(uid);

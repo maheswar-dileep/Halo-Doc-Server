@@ -22,7 +22,7 @@ const userSchema = new Schema<IUser>({
   },
   blocked: {
     type: Boolean,
-    required: true,
+    default: true,
   },
 });
 

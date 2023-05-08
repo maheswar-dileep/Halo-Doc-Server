@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const connection = () => {
   try {
-    mongoose.connect('mongodb://127.0.0.1:27017/halo-doc');
+    mongoose.connect(process.env.MONGODB_URL);
     console.log('db connected successfully');
   } catch (error) {
     console.log(error);
