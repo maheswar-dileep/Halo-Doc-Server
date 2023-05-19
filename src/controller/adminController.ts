@@ -2,10 +2,10 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import Stripe from 'stripe';
+import { paginate } from 'mongoose-paginate-v2';
 import { v2 as cloudinary } from 'cloudinary';
-import {
-  ADMIN, DOCTOR, DEPARTMENT, BLOG, USER,
-} from '../model/export.js';
+import { ADMIN, DOCTOR, DEPARTMENT, BLOG, USER, FEEDBACK, REPORT_DOCTOR, APPOINTMENT } from '../model/export.js';
 
 dotenv.config();
 
@@ -17,11 +17,15 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+const stripe = new Stripe(process.env.STRIPE_SECRET, {
+  apiVersion: '2022-11-15',
+});
+
 /*
  *Admin Controllers
  */
 
-//! ADMIN-LOGIN
+//* ADMIN-LOGIN
 
 export const login = async (req: Request, res: Response) => {
   try {
@@ -54,7 +58,7 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-//! Add-Doctor
+//* Add-Doctor
 
 interface IUserReqBody {
   firstName: string;
@@ -121,7 +125,7 @@ export const addDoctor = async (req: Request, res: Response) => {
   }
 };
 
-//! Get-All-Doctors
+//* Get-All-Doctors
 
 export const getAllDoctors = async (req: Request, res: Response) => {
   try {
@@ -133,30 +137,12 @@ export const getAllDoctors = async (req: Request, res: Response) => {
   }
 };
 
-//! Delete-doctors
+//* Delete-doctors
 
 export const deleteDoctor = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const doctor = await DOCTOR.findOne({ _id: id });
-
-    // const publicId = doctor.photoURL.split('profile/')
-
-    // //* Function to delete image
-
-    // const deleteImage = (publicId) => {
-    //     cloudinary.uploader.destroy(publicId, (err, result) => {
-    //         if (err) {
-    //             console.log(err)
-    //         } else {
-    //             DOCTOR.deleteOne({ _id: id })
-    //             console.log(result)
-    //         }
-    //     })
-    // }
-
-    // deleteImage(publicId);
-
     const result = await DOCTOR.deleteOne({ _id: id });
 
     if (result.acknowledged) {
@@ -168,7 +154,7 @@ export const deleteDoctor = async (req: Request, res: Response) => {
   }
 };
 
-//! Add-Department
+//* Add-Department
 
 export const addDepartment = async (req: Request, res: Response) => {
   try {
@@ -195,7 +181,7 @@ export const addDepartment = async (req: Request, res: Response) => {
   }
 };
 
-//! Add-Blog
+//* Add-Blog
 
 export const addBlog = async (req: Request, res: Response) => {
   try {
@@ -217,7 +203,7 @@ export const addBlog = async (req: Request, res: Response) => {
   }
 };
 
-//! Get Single Blog
+//* Get Single Blog
 
 export const getSingleBlog = async (req: Request, res: Response) => {
   try {
@@ -235,10 +221,7 @@ export const getSingleBlog = async (req: Request, res: Response) => {
   }
 };
 
-//! edit blog
-// interface ReqParams {
-//   id: string;
-// }
+//* edit blog
 
 export const editBlog = async (req: Request, res: Response) => {
   try {
@@ -253,33 +236,13 @@ export const editBlog = async (req: Request, res: Response) => {
   }
 };
 
-//! Delete Blog
+//* Delete Blog
 
 export const deleteBlog = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-
-    //* Function to delete image
-    // Todo: delete image from cloudinary
-
-    // const blog = await BLOG.findOne({ _id: id })
-    // const publicId: string = blog.imageURL.split('/blog/')[1].split('.')[0]
-
-    // const deleteImage = async (publicId: string) => {
-    //     try {
-    //         const result = await cloudinary.uploader.destroy(publicId)
-    //         if (result) {
-    //             console.log(result)
-    //         }
-    //     } catch (error) {
-    //         console.log(error)
-    //     }
-    // }
-
-    // Example usage
-    // deleteImage(publicId);
-
     const result = await BLOG.deleteOne({ _id: id });
+
     if (result.acknowledged) {
       res.status(200).send({ success: true, message: 'delete blog Successful' });
     }
@@ -289,7 +252,7 @@ export const deleteBlog = async (req: Request, res: Response) => {
   }
 };
 
-//! Get-All-Users
+//* Get-All-Users
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
@@ -301,7 +264,28 @@ export const getAllUsers = async (req: Request, res: Response) => {
   }
 };
 
-//! Block-User
+//* getUsers
+
+export const getUsers = async (req: Request, res: Response) => {
+  try {
+    const { page } = req.params;
+    const data = await USER.paginate(
+      {},
+      {
+        page,
+        limit: 6,
+        collation: {
+          locale: 'en',
+        },
+      }
+    );
+    res.status(200).send({ success: true, message: 'get all users succesfull', data: data.docs });
+  } catch (error) {
+    res.status(500).send({ success: false });
+  }
+};
+
+//* Block-User
 
 export const blockUser = async (req: Request, res: Response) => {
   try {
@@ -316,6 +300,175 @@ export const blockUser = async (req: Request, res: Response) => {
     if (blocked.acknowledged) {
       res.status(200).send({ success: true, message: `${user.blocked ? 'unblocked' : 'blocked'} user` });
     }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+//* Get Doctor reports
+
+export const getDoctorReports = async (req: Request, res: Response) => {
+  try {
+    const doctorReports = await REPORT_DOCTOR.find({});
+    res.status(200).send({ success: true, message: 'get doctor reports successfull', doctorReports });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+//* Get User Feedbacks
+
+export const getUserFeedbacks = async (req: Request, res: Response) => {
+  try {
+    const feedbacks = await FEEDBACK.find({});
+    res.status(200).send({ success: true, message: 'Get Feedbacks Successfull', feedbacks });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+//* Get Payments List
+
+export const getPaymentsList = async (req: Request, res: Response) => {
+  try {
+    const PAGE_SIZE = 8;
+    const options = {
+      limit: PAGE_SIZE,
+    };
+    let charges;
+    const { page } = req.query;
+
+    if (page === 'next' && req.query.lastPaymentId) {
+      //* To get the next page of charges
+
+      charges = await stripe.charges.list({
+        ...options,
+        starting_after: req.query.lastPaymentId,
+      });
+    } else if (page === 'prev' && req.query.firstPaymentId) {
+      //* To get the previous page of charges
+
+      charges = await stripe.charges.list({
+        ...options,
+        ending_before: req.query.firstPaymentId,
+      });
+    } else {
+      //* To get the first page of charges
+
+      charges = await stripe.charges.list(options);
+    }
+
+    res.status(200).send({ success: true, message: 'Get Payments Successful', payments: charges });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+//* Get Payments refund List
+
+export const getPaymentsRefundList = async (req: Request, res: Response) => {
+  try {
+    const PAGE_SIZE = 3;
+    const options = {
+      limit: PAGE_SIZE,
+    };
+    let refunds;
+    const { page } = req.query;
+
+    if (page === 'next' && req.query.lastRefundId) {
+      //* To get the next page of refunds
+
+      refunds = await stripe.refunds.list({
+        ...options,
+        starting_after: req.query.lastRefundId,
+      });
+    } else if (page === 'prev' && req.query.firstRefundId) {
+      //* To get the previous page of refunds
+
+      refunds = await stripe.refunds.list({
+        ...options,
+        ending_before: req.query.firstRefundId,
+      });
+    } else {
+      //* To get the first page of refunds
+
+      refunds = await stripe.refunds.list(options);
+    }
+
+    res.status(200).send({ success: true, message: 'Get Refunds Successful', refunds });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+//* get revenue
+
+export const getRevenue = async (req: Request, res: Response) => {
+  try {
+    const revenue = await APPOINTMENT.aggregate([
+      { $match: { cancelled: false, payment: true } },
+      { $group: { _id: null, totalPrice: { $sum: { $toInt: '$price' } } } },
+    ]);
+
+    // get today's date
+    const today = new Date();
+    const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+
+    // group appointments by date and sum up prices
+    const result = await APPOINTMENT.aggregate([
+      {
+        $match: {
+          date: { $gte: startOfDay, $lt: endOfDay },
+        },
+      },
+      {
+        $group: {
+          _id: '$date',
+          totalPrice: { $sum: { $toDouble: '$price' } },
+        },
+      },
+    ]);
+
+    res.status(200).send({ success: true, message: 'get revenue successfull', revenue: revenue[0].totalPrice });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+//* get number of appointment
+
+export const totalAppoinmtent = async (req: Request, res: Response) => {
+  try {
+    const maleCount: number = await APPOINTMENT.countDocuments({ gender: 'male' });
+    const femaleCount: number = await APPOINTMENT.countDocuments({ gender: 'female' });
+    const total: number = maleCount + femaleCount;
+    const data = {
+      maleCount,
+      femaleCount,
+      total,
+    };
+
+    res.status(200).send({ success: true, message: 'get revenue successfull', data });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+//* get number of doctors
+
+export const getTotalDoctors = async (req: Request, res: Response) => {
+  try {
+    const doctorsCount: number = await DOCTOR.countDocuments({}, {});
+
+    res.status(200).send({ success: true, message: 'get revenue successfull', doctorsCount });
   } catch (error) {
     console.log(error);
     res.status(500).send({ success: false, message: 'Internal Server Error' });

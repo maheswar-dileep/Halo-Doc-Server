@@ -1,6 +1,12 @@
 import mongoose, { Schema } from 'mongoose';
 
-const messageSchema = new Schema(
+interface IMessage {
+  conversationId: string;
+  sender: string;
+  text: string;
+}
+
+const messageSchema = new Schema<IMessage>(
   {
     conversationId: {
       type: String,
@@ -17,8 +23,8 @@ const messageSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-const messageModel = mongoose.model('message', messageSchema);
+const messageModel = mongoose.model<IMessage>('message', messageSchema);
 export default messageModel;

@@ -6,6 +6,8 @@ import BLOG from './blogSchema.js';
 import APPOINTMENT from './appointmentSchema.js';
 import MESSAGE from './messageSchema.js';
 import CONVERSATION from './conversationSchema.js';
+import REPORT_DOCTOR from './reportDoctorSchema.js';
+import FEEDBACK from './feedback.js';
 
 export {
   USER,
@@ -16,4 +18,6 @@ export {
   APPOINTMENT,
   MESSAGE,
   CONVERSATION,
+  REPORT_DOCTOR,
+  FEEDBACK,
 };

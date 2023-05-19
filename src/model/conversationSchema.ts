@@ -1,9 +1,13 @@
 import mongoose, { Schema } from 'mongoose';
 
-const conversationSchema = new Schema(
+interface IConversation {
+  members: Array<string>;
+}
+
+const conversationSchema = new Schema<IConversation>(
   {
     members: {
-      type: Array,
+      type: [String],
       required: true,
     },
   },
@@ -12,5 +16,5 @@ const conversationSchema = new Schema(
   },
 );
 
-const conversationModel = mongoose.model('conversation', conversationSchema);
+const conversationModel = mongoose.model<IConversation>('conversation', conversationSchema);
 export default conversationModel;

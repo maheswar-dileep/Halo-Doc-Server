@@ -1,11 +1,17 @@
 import mongoose, { Schema } from 'mongoose';
+import paginate from 'mongoose-paginate-v2';
 
-const departmentSchema = new Schema({
+interface IDept {
+  name: string;
+}
+
+const departmentSchema = new Schema<IDept>({
   name: {
     type: String,
     required: true,
   },
 });
 
-const departmentModel = mongoose.model('department', departmentSchema);
+departmentSchema.plugin(paginate);
+const departmentModel = mongoose.model<IDept>('department', departmentSchema);
 export default departmentModel;

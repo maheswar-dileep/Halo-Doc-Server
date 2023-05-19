@@ -4,8 +4,18 @@ import * as controller from '../controller/doctorController.js';
 
 const router = express.Router();
 
+//* login
 router.route('/login').post(controller.login);
-router.route('/appointment/get-appointments').get(controller.getAppointments);
-router.route('/appointment/cancel-appointment').patch(controller.cancelAppointments);
+
+//* appointments
+
+router.route('/appointment/get-appointments/:id').get(controller.getAppointments);
+router.route('/appointment/cancel-appointment/:id').patch(controller.cancelAppointment);
+
+//* get routes
+router.route('/get-doctor/:id').get(controller.getDoctor);
+router.route('/edit-doctor/:id').patch(controller.editDoctor);
+router.route('/patients/:id').get(controller.getPatients);
+router.route('/get-total-revenue/:id').get(controller.getTotalRevenue);
 
 export default router;

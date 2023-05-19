@@ -1,6 +1,13 @@
 import mongoose, { Schema } from 'mongoose';
+import paginate from 'mongoose-paginate-v2';
 
-const blogSchema = new Schema({
+interface IBlog {
+  title: string;
+  content: string;
+  imageURL: string;
+}
+
+const blogSchema = new Schema<IBlog>({
   title: {
     type: String,
     required: true,
@@ -13,24 +20,8 @@ const blogSchema = new Schema({
     type: String,
     required: true,
   },
-  comment: {
-    type: {
-      userName: {
-        type: String,
-        required: true,
-      },
-      comment: {
-        type: String,
-        required: true,
-      },
-      profileURL: {
-        type: String,
-        required: true,
-      },
-    },
-    required: false,
-  },
 });
 
-const blogModel = mongoose.model('blog', blogSchema);
+blogSchema.plugin(paginate);
+const blogModel = mongoose.model<IBlog>('blog', blogSchema);
 export default blogModel;

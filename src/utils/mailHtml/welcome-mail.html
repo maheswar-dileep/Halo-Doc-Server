@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WELCOME TO HALO-DOC</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css?family=Varela+Round");
+
+    * {
+      margin: 0;
+      padding: 0;
+      font-family: Varela Round, "Segoe UI", "Arial", "san serif";
+    }
+
+    img {
+      display: inline-block;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 20px auto;
+      border-radius: 4px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      min-height: 100px;
+      position: relative;
+    }
+
+    .container::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(to right, #0267c1, #d65108);
+    }
+
+    .logo {
+      display: flex;
+      margin-top: 30px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .thumbs {
+      width: 100px;
+      margin: auto;
+      height: 136px;
+    }
+
+    .thumbs img {
+      width: 100%;
+    }
+
+    .illustration {
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.05);
+      border-radius: 0 0 50% 50%/1%;
+      text-align: center;
+    }
+
+    .illustration img {
+      width: 70%;
+      margin: 50px auto;
+    }
+
+    .separator {
+      display: block;
+      height: 3px;
+      width: 70%;
+      margin: 10px auto;
+      background-color: rgba(0, 0, 0, 0.05);
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .separator::before,
+    .separator::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 33%;
+      border-radius: inherit;
+      opacity: 0.05;
+    }
+
+    .separator::before {
+      left: 0;
+      background: #efa00b;
+    }
+
+    .separator::after {
+      left: initial;
+      right: 0;
+      background: #d65108;
+    }
+
+    .hgroup {
+      text-align: center;
+      padding: 10px 30px;
+    }
+
+    .name {
+      display: block;
+      color: #0267c1;
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+    }
+
+    .hgroup h1 {
+      font-size: 20px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .hgroup h2 {
+      font-size: 19px;
+    }
+
+    .hgroup p {
+      font-size: 15px;
+      color: slategrey;
+      margin-top: 15px;
+      text-align: justify;
+      line-height: 25px;
+    }
+
+    .items {
+      padding: 30px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .item {
+      margin-bottom: 10px;
+      text-align: center;
+      width: 100%;
+      margin: 0 auto 50px;
+    }
+
+    .item .icon {
+      margin-bottom: 10px;
+    }
+
+    .item .icon img {
+      width: 60px;
+    }
+
+    .item .title {
+      margin-bottom: 5px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .item .subtitle {
+      font-size: 13px;
+      color: slategrey;
+      padding: 1rem;
+    }
+
+    .button-wrap {
+      text-align: center;
+      padding: 2rem;
+    }
+
+    button.explore {
+      padding: 15px 25px;
+      font: inherit;
+      background: linear-gradient(to right, #0267c1, #0280ef);
+      border-radius: 50px;
+      border: 0;
+      color: #fff;
+      margin: auto;
+      display: inline-block;
+      transition: all 0.2s ease-in-out;
+      cursor: pointer;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    button.explore:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 10px -7px rgba(0, 0, 0, 0.1);
+    }
+
+    footer {
+      font-size: 12px;
+      color: slategrey;
+      text-align: center;
+      padding: 30px;
+    }
+
+    .rad {
+      margin: 0 !important;
+      text-align: center !important;
+      font-size: 18px !important;
+    }
+
+    .raised {
+      font-size: 16px;
+      color: #777;
+      display: block;
+      color: steelblue;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="logo">
+      <H2></H2>
+    </div>
+      <div class="hgroup">
+        <span class="name">HALO-DOC</span>
+        <br>
+        <h1>Thank you for Signing Up</h1>
+      </div>
+
+    <div class="hgroup">
+      <p>
+        HALO-DOC aims at solving all lending problems in Medical, we built a platform to support the users
+        community with high quality medical consultation, Highly qualified team of some of the best names who deliver improved well-being to you. Carefully vetted
+        through a rigorous selection process. Trained and experienced in all therapy techniques.
+        <br><br>
+      <p>
+      </p>
+      <p>If you have any questions, kindly reach out to our team on halodoc.online@gmail.com</p>
+
+      <p>Have an AWESOME day! <br>
+      </p>
+      </p>
+
+    </div>
+  </div>
+  <footer>
+    HALO-DOC Inc © 2019
+    <br>
+    Somewhere in earth.
+    <br>
+    Tel: 9988116655
+  </footer>
+  </div>
+</body>
+
+</html>

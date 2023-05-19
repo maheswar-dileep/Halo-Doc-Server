@@ -1,8 +1,29 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Schema, Types } from 'mongoose';
+import paginate from 'mongoose-paginate-v2';
+interface IAppointment {
+  userId: Types.ObjectId;
+  firstName: string;
+  lastName: string;
+  age: string;
+  gender: string;
+  email: string;
+  mobile: string;
+  department: string;
+  symptoms: Array<string>;
+  date: string;
+  time: string;
+  doctorName: string;
+  doctorId: Types.ObjectId;
+  price: string;
+  cancelled: boolean;
+  payment: boolean;
+  payment_intent: string;
+  active: boolean;
+}
 
-const appointmentSchema = new Schema({
+const appointmentSchema = new Schema<IAppointment>({
   userId: {
-    type: mongoose.Types.ObjectId,
+    type: Types.ObjectId,
     required: true,
   },
   firstName: {
@@ -34,7 +55,7 @@ const appointmentSchema = new Schema({
     required: true,
   },
   symptoms: {
-    type: Array,
+    type: [String],
     required: true,
   },
   date: {
@@ -50,7 +71,7 @@ const appointmentSchema = new Schema({
     required: true,
   },
   doctorId: {
-    type: mongoose.Types.ObjectId,
+    type: Types.ObjectId,
     required: true,
   },
   price: {
@@ -65,7 +86,17 @@ const appointmentSchema = new Schema({
     type: Boolean,
     default: true,
   },
+  active: {
+    type: Boolean,
+    default: true,
+  },
+  payment_intent: {
+    type: String,
+  },
 });
 
-const appointmentModel = mongoose.model('appointment', appointmentSchema);
+
+appointmentSchema.plugin(paginate);
+
+const appointmentModel = mongoose.model<IAppointment>('appointment', appointmentSchema);
 export default appointmentModel;

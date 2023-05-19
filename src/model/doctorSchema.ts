@@ -1,6 +1,21 @@
 import mongoose, { Schema } from 'mongoose';
+import paginate from 'mongoose-paginate-v2';
+interface IDoctor {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: number;
+  address: string;
+  profile: string;
+  photoURL: string;
+  dob: string;
+  department: string;
+  workTime: string;
+  fees: string;
+  password: string;
+}
 
-const doctorSchema = new Schema({
+const doctorSchema = new Schema<IDoctor>({
   firstName: {
     type: String,
     required: true,
@@ -51,5 +66,6 @@ const doctorSchema = new Schema({
   },
 });
 
-const doctorModel = mongoose.model('doctor', doctorSchema);
+doctorSchema.plugin(paginate);
+const doctorModel = mongoose.model<IDoctor>('doctor', doctorSchema);
 export default doctorModel;

@@ -1,15 +1,18 @@
 import dotenv from 'dotenv';
 import { Request, Response } from 'express';
 import Stripe from 'stripe';
-import jwt, { verify } from 'jsonwebtoken';
-import { USER, APPOINTMENT, DOCTOR } from '../model/export.js';
+import jwt from 'jsonwebtoken';
+import { USER, APPOINTMENT, DOCTOR, REPORT_DOCTOR, FEEDBACK } from '../model/export.js';
 import RequestDefenition from '../defenitions.js';
 import verifyFirebaseToken from '../config/firebase.js';
+import mailService from '../utils/nodemailer.js';
 
 dotenv.config();
 const stripe = new Stripe(process.env.STRIPE_SECRET, {
   apiVersion: '2022-11-15',
 });
+
+//* User SignUp
 
 export const signup = async (req: Request, res: Response) => {
   try {
@@ -29,23 +32,26 @@ export const signup = async (req: Request, res: Response) => {
     // * Saving userData to Database
 
     const newUser = new USER(userData);
-    newUser.save().then((response) => {
-      const id = response?._id;
-      const token = jwt.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: '1d',
-      });
+    const response = await newUser.save();
+    const id = response?._id;
+    const token = jwt.sign({ id }, process.env.JWT_SECRET, {
+      expiresIn: '1d',
+    });
 
-      res.status(200).send({
-        success: true,
-        message: user.photoURL ? 'google login succesful' : 'email login succesfull',
-        token,
-      });
+    mailService('welcome', user.email);
+
+    res.status(200).send({
+      success: true,
+      message: user.photoURL ? 'google login succesful' : 'email login succesfull',
+      token,
     });
   } catch (error) {
     console.log(error);
     res.status(500).send({ success: false, message: 'internal server error' });
   }
 };
+
+//* User Login
 
 export const login = async (req: Request, res: Response) => {
   try {
@@ -77,6 +83,8 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
+//* Get User Info
+
 export const getUserInfo = (req: RequestDefenition, res: Response) => {
   try {
     return res.status(200).send({ success: true, message: 'get user successful' });
@@ -85,6 +93,8 @@ export const getUserInfo = (req: RequestDefenition, res: Response) => {
     return res.status(500).send({ success: false, message: 'internal server error' });
   }
 };
+
+//* Get Doctors
 
 export const getDoctorsbyDept = async (req: Request, res: Response) => {
   try {
@@ -97,7 +107,7 @@ export const getDoctorsbyDept = async (req: Request, res: Response) => {
   }
 };
 
-//! WEB-HOOK
+//* WEB-HOOK (! For Stripe Payment )
 
 export const webHooks = async (req: Request, res: Response) => {
   try {
@@ -132,8 +142,10 @@ export const webHooks = async (req: Request, res: Response) => {
     try {
       if (eventType === 'checkout.session.completed') {
         const customer = await stripe.customers.retrieve(data.customer);
-        const appointments = customer?.metadata?.appointments;
-        const newAppointment = new APPOINTMENT(JSON.parse(appointments));
+        let appointments = customer?.metadata?.appointments;
+        appointments = JSON.parse(appointments);
+        appointments.payment_intent = data?.payment_intent;
+        const newAppointment = new APPOINTMENT(appointments);
         newAppointment.save();
       }
     } catch (error) {
@@ -144,6 +156,8 @@ export const webHooks = async (req: Request, res: Response) => {
     console.log(error);
   }
 };
+
+//* Creating Stripe Payment
 
 export const payment = async (req: Request, res: Response) => {
   try {
@@ -184,6 +198,90 @@ export const payment = async (req: Request, res: Response) => {
       console.log(error);
       return res.status(500).send({ success: false, message: 'Internal Server Error' });
     }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+//* Cancel Appointment
+
+export const cancelAppointment = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const appointment = await APPOINTMENT.find({ id });
+    if (!appointment) return res.status(200).send({ success: false, message: 'Appointment not found' });
+
+    const refund = await stripe.refunds.create({
+      payment_intent: appointment.payment_intent,
+      amount: appointment.price,
+    });
+
+    return res.status(200).send({ success: true, message: 'Appointment cancelled successfully' });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+//* Create Notification
+
+export const createNotification = async (req: Request, res: Response) => {
+  try {
+    const { userId, text } = req.body;
+    const result = USER.updateOne({ _id: userId }, {});
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+//* Check Available Timing
+
+export const checkAvailableTiming = async (req: Request, res: Response) => {
+  try {
+    const { date, doctorId } = req.body;
+    const response = await APPOINTMENT.find({ date, doctorId }).select('time').exec();
+    console.log(response);
+    return res.status(200).send({ success: true, message: 'Check Availability Successful', data: response });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+//* Report Doctor
+
+export const reportDoctor = async (req: Request, res: Response) => {
+  try {
+    const { userId, doctorId, reason } = req.body;
+
+    const newReport = await new REPORT_DOCTOR({ userId, doctorId, reason });
+    await newReport.save();
+
+    return res.status(200).send({ success: true, message: 'doctor reported Successfully' });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+//* feedback
+
+export const createFeedback = async (req: Request, res: Response) => {
+  try {
+    const { doctorId, userId, rating, feedback } = req.body;
+
+    const newFeedback = await new FEEDBACK({
+      doctorId,
+      userId,
+      rating,
+      feedback,
+    });
+    await newFeedback.save();
+
+    return res.status(200).send({ success: true, message: 'Feedback added successfully' });
   } catch (error) {
     console.log(error);
     return res.status(500).send({ success: false, message: 'Internal Server Error' });

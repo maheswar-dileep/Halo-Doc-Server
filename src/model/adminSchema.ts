@@ -1,6 +1,11 @@
 import mongoose, { Schema } from 'mongoose';
-
-const adminSchema = new Schema({
+import paginate from 'mongoose-paginate-v2';
+interface IAdmin {
+  name: string;
+  email: string;
+  password: string;
+}
+const adminSchema = new Schema<IAdmin>({
   name: {
     type: String,
     required: true,
@@ -15,5 +20,7 @@ const adminSchema = new Schema({
   },
 });
 
-const adminModel = mongoose.model('admin', adminSchema);
+adminSchema.plugin(paginate);
+
+const adminModel = mongoose.model<IAdmin>('admin', adminSchema);
 export default adminModel;
