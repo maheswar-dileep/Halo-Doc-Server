@@ -1,13 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import paginate from 'mongoose-paginate-v2';
-
-interface IUser {
-  name: string;
-  email: string;
-  profileURL: string;
-  blocked: boolean;
-  notification: Array<object>;
-}
+import { IUser } from '../Types/interface.js';
 
 const userSchema = new Schema<IUser>({
   name: {

@@ -33,3 +33,16 @@ export const getDepartments = async (req: Request, res: Response) => {
     return res.status(500).send({ success: true, message: 'Internal Server Error' });
   }
 };
+
+export const searchDoctors = async (req: Request, res: Response) => {
+  try {
+    const { keyword } = req.query;
+    const regex = new RegExp(keyword.toString(), 'i');
+
+    const result = await DOCTOR.find({ firstName: { $regex: regex } });
+    return res.status(200).send({ success: true, message: 'search doctor successful', result });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ success: true, message: 'Internal Server Error' });
+  }
+};

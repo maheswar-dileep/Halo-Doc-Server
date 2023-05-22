@@ -18,4 +18,9 @@ router.route('/edit-doctor/:id').patch(controller.editDoctor);
 router.route('/patients/:id').get(controller.getPatients);
 router.route('/get-total-revenue/:id').get(controller.getTotalRevenue);
 
+//* apply for Leave
+
+router.route('/apply-leave').patch(controller.applyLeave);
+router.route('/cancel-leave').patch(controller.cancelLeave);
+
 export default router;

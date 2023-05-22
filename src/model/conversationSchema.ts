@@ -1,8 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-
-interface IConversation {
-  members: Array<string>;
-}
+import { IConversation } from '../Types/interface.js';
 
 const conversationSchema = new Schema<IConversation>(
   {

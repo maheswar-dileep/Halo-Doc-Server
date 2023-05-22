@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import Stripe from 'stripe';
 import mongoose from 'mongoose';
 import { APPOINTMENT, BLOG, DOCTOR } from '../model/export.js';
+import { IAppointment, IBlog, IDoctor } from '../Types/interface.js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET, {
   apiVersion: '2022-11-15',
@@ -14,7 +15,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET, {
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    const doctor = await DOCTOR.findOne({ email });
+    const doctor: IDoctor = await DOCTOR.findOne({ email });
 
     if (!doctor) {
       return res.status(200).send({ success: false, message: 'Doctor does not exist' });
@@ -29,7 +30,12 @@ export const login = async (req: Request, res: Response) => {
         expiresIn: '1d',
       });
       doctor.password = null;
-      return res.status(200).send({ success: true, message: 'Doctor login successfull', doctor, token });
+      return res.status(200).send({
+        success: true,
+        message: 'Doctor login successfull',
+        doctor,
+        token,
+      });
     }
     return res.status(200).send({ success: false, message: 'Wrong Password' });
   } catch (error) {
@@ -42,7 +48,7 @@ export const login = async (req: Request, res: Response) => {
 
 export const addBlog = async (req: Request, res: Response) => {
   try {
-    const blogData = {
+    const blogData: IBlog = {
       title: req.body.title,
       content: req.body.content,
       imageURL: req.body.imageURL,
@@ -100,27 +106,14 @@ export const getDoctor = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const doctor = await DOCTOR.find({ _id: id });
-    return res.status(500).send({ success: true, message: 'get doctor Successful', doctor });
+    return res.status(200).send({ success: true, message: 'get doctor Successful', doctor });
   } catch (error) {
+    console.log(error);
     return res.status(500).send({ success: false, message: 'Internal server error' });
   }
 };
 
 //* edit doctor
-interface IUserReqBody {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  department: string;
-  dob: Date;
-  fees: string;
-  workTime: string;
-  photoURL: string;
-  password: string;
-  profile?: string;
-  address: string;
-}
 
 export const editDoctor = async (req: Request, res: Response) => {
   try {
@@ -140,7 +133,7 @@ export const editDoctor = async (req: Request, res: Response) => {
       dob,
       profile,
       photoURL,
-    }: IUserReqBody = req.body;
+    }: IDoctor = req.body;
 
     const doctor = {
       firstName,
@@ -247,4 +240,52 @@ export const getTotalRevenue = async (req: Request, res: Response) => {
   }
 };
 
-//* get available appointments
+//* Apply Leave
+
+export const applyLeave = async (req: Request, res: Response) => {
+  try {
+    const { leaveDate, doctorId } = req.body;
+
+    const doctor = await DOCTOR.findOne({ _id: doctorId });
+
+    if (!doctor) return res.status(404).send({ success: false, message: 'user not found' });
+
+    if (doctor?.leave?.includes(leaveDate)) {
+      return res.status(200).json({ success: false, message: 'Leave Already Applied on the Same Date' });
+    }
+
+    await DOCTOR.updateOne({ _id: doctorId }, { $push: { leave: leaveDate } });
+
+    return res.status(200).send({ success: true, message: 'Leave Applied Successfully' });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+//* Apply Leave
+
+export const cancelLeave = async (req: Request, res: Response) => {
+  try {
+    const { leaveDate, doctorId } = req.body;
+
+    const doctor = await DOCTOR.findOne({ _id: doctorId });
+
+    if (!doctor) return res.status(404).send({ success: false, message: 'user not found' });
+
+    if (doctor?.leave?.includes(leaveDate) === false) {
+      return res.status(200).json({ success: false, message: 'No Leave on the Same Date' });
+    }
+
+    const date = doctor.leave.filter((data) => data !== leaveDate);
+
+    await DOCTOR.updateOne({ _id: doctorId }, { leave: date });
+
+    const result = await DOCTOR.findOne({ _id: doctorId });
+
+    res.status(200).send({ success: true, message: 'Leave Cancelled Successfully', result: result.leave });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ success: false, message: 'Internal Server Error' });
+  }
+};

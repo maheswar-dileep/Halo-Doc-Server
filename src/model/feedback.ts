@@ -1,20 +1,14 @@
 import mongoose, { Schema, Types } from 'mongoose';
 import paginate from 'mongoose-paginate-v2';
-
-interface IFeedback {
-  doctorId: Types.ObjectId;
-  userId: Types.ObjectId;
-  rating: number;
-  feedback: string;
-}
+import { IFeedback } from '../Types/interface.js';
 
 const feedbackSchema = new Schema<IFeedback>({
   doctorId: {
-    type: Types.ObjectId,
+    type: String,
     required: true,
   },
   userId: {
-    type: Types.ObjectId,
+    type: String,
     required: true,
   },
   rating: {

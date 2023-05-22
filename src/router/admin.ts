@@ -12,7 +12,6 @@ router.route('/login').post(controller.login); //! admin login
 
 router.route('/users/get-all-users').get(controller.getAllUsers); //! get-all-users
 router.route('/users/block-user/:id').patch(controller.blockUser); //! block-user
-router.route('/get-users').get(controller.getUsers);
 
 //* Doctors Management
 

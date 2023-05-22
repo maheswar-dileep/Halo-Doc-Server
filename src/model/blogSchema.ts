@@ -1,11 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import paginate from 'mongoose-paginate-v2';
-
-interface IBlog {
-  title: string;
-  content: string;
-  imageURL: string;
-}
+import { IBlog } from '../Types/interface.js';
 
 const blogSchema = new Schema<IBlog>({
   title: {

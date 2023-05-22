@@ -12,7 +12,6 @@ import router from './router/router.js';
 import conversationRouter from './router/conversation.js';
 import messageRouter from './router/message.js';
 import connection from './config/mongodbConnection.js';
-// import socketConnection from './utils/socketio.js';
 
 const app = express();
 dotenv.config();

@@ -1,9 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import paginate from 'mongoose-paginate-v2';
-
-interface IDept {
-  name: string;
-}
+import { IDept } from '../Types/interface.js';
 
 const departmentSchema = new Schema<IDept>({
   name: {

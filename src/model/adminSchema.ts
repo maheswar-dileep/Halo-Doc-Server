@@ -1,10 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 import paginate from 'mongoose-paginate-v2';
-interface IAdmin {
-  name: string;
-  email: string;
-  password: string;
-}
+import { IAdmin } from '../Types/interface.js';
+
 const adminSchema = new Schema<IAdmin>({
   name: {
     type: String,

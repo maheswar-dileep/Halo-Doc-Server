@@ -1,29 +1,10 @@
-import mongoose, { Schema, Types } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import paginate from 'mongoose-paginate-v2';
-interface IAppointment {
-  userId: Types.ObjectId;
-  firstName: string;
-  lastName: string;
-  age: string;
-  gender: string;
-  email: string;
-  mobile: string;
-  department: string;
-  symptoms: Array<string>;
-  date: string;
-  time: string;
-  doctorName: string;
-  doctorId: Types.ObjectId;
-  price: string;
-  cancelled: boolean;
-  payment: boolean;
-  payment_intent: string;
-  active: boolean;
-}
+import { IAppointment } from '../Types/interface.js';
 
 const appointmentSchema = new Schema<IAppointment>({
   userId: {
-    type: Types.ObjectId,
+    type: String,
     required: true,
   },
   firstName: {
@@ -71,7 +52,7 @@ const appointmentSchema = new Schema<IAppointment>({
     required: true,
   },
   doctorId: {
-    type: Types.ObjectId,
+    type: String,
     required: true,
   },
   price: {
@@ -94,7 +75,6 @@ const appointmentSchema = new Schema<IAppointment>({
     type: String,
   },
 });
-
 
 appointmentSchema.plugin(paginate);
 

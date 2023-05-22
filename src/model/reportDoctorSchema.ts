@@ -1,19 +1,14 @@
-import mongoose, { Schema, Types } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import paginate from 'mongoose-paginate-v2';
-
-interface IReportDoctor {
-  doctorId: Types.ObjectId;
-  userId: Types.ObjectId;
-  reason: string;
-}
+import { IReportDoctor } from '../Types/interface.js';
 
 const reportDoctorSchema = new Schema<IReportDoctor>({
   doctorId: {
-    type: Types.ObjectId,
+    type: String,
     required: true,
   },
   userId: {
-    type: Types.ObjectId,
+    type: String,
     required: true,
   },
   reason: {
