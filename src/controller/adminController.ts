@@ -3,7 +3,6 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import Stripe from 'stripe';
-import { paginate } from 'mongoose-paginate-v2';
 import { v2 as cloudinary } from 'cloudinary';
 import { ADMIN, DOCTOR, DEPARTMENT, BLOG, USER, FEEDBACK, REPORT_DOCTOR, APPOINTMENT } from '../model/export.js';
 
@@ -129,10 +128,16 @@ export const addDoctor = async (req: Request, res: Response) => {
 
 export const getAllDoctors = async (req: Request, res: Response) => {
   try {
-    const doctors = await DOCTOR.find({});
-    res.status(200).send({ success: true, message: 'get All doctors succesfull', data: doctors });
+    const { page } = req.query;
+    const options = {
+      page: page || 1,
+      limit: 8,
+    };
+
+    const data = await DOCTOR.paginate({}, options);
+    res.status(200).send({ success: true, message: 'get All doctors succesfull', data });
   } catch (error) {
-    console.log(error);
+    console.error('Error in admin: Get-Doctors :-', error);
     res.status(500).send({ success: false, message: 'Internal server error' });
   }
 };
@@ -149,7 +154,7 @@ export const deleteDoctor = async (req: Request, res: Response) => {
       res.status(200).send({ success: true, message: `DR. ${doctor.firstName} deleted succesfully` });
     }
   } catch (error) {
-    // console.log(error)
+    console.log(error)
     res.status(500).send({ success: false, message: 'internal server error' });
   }
 };
@@ -256,32 +261,19 @@ export const deleteBlog = async (req: Request, res: Response) => {
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
-    const users = await USER.find({});
-    res.status(200).send({ success: true, message: 'get all users succesfull', data: users });
+    const { page } = req.query;
+
+    const options = {
+      page: page || 1,
+      limit: 6,
+    };
+
+    const data = await USER.paginate({}, options);
+
+    res.status(200).send({ success: true, message: 'get all users succesfull', data });
   } catch (error) {
-    console.log(error);
+    console.log('Error in admin - Get All Users :-', error);
     res.status(500).send({ success: false, message: 'Internal server error' });
-  }
-};
-
-//* getUsers
-
-export const getUsers = async (req: Request, res: Response) => {
-  try {
-    const { page } = req.params;
-    const data = await USER.paginate(
-      {},
-      {
-        page,
-        limit: 6,
-        collation: {
-          locale: 'en',
-        },
-      }
-    );
-    res.status(200).send({ success: true, message: 'get all users succesfull', data: data.docs });
-  } catch (error) {
-    res.status(500).send({ success: false });
   }
 };
 
@@ -291,7 +283,7 @@ export const blockUser = async (req: Request, res: Response) => {
   try {
     let block: boolean;
     const { id } = req.params;
-    const user: any = await USER.find({ _id: id });
+    const user = await USER.find({ _id: id });
     if (user.blocked) block = false;
     else block = true;
 

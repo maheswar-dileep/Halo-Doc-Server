@@ -26,7 +26,7 @@ export const signup = async (req: Request, res: Response) => {
     const userData = {
       name: user.displayName,
       email: user.email,
-      profileURL: user.photoURL ? user.photoURL : false,
+      profileURL: user.photoURL ? user?.photoURL : false,
     };
 
     // * Saving userData to Database
@@ -42,7 +42,7 @@ export const signup = async (req: Request, res: Response) => {
 
     res.status(200).send({
       success: true,
-      message: user.photoURL ? 'google login succesful' : 'email login succesfull',
+      message: user?.photoURL ? 'google login succesful' : 'email login succesfull',
       token,
     });
   } catch (error) {
@@ -72,7 +72,7 @@ export const login = async (req: Request, res: Response) => {
 
       res.status(200).send({
         success: true,
-        message: user.photoURL ? 'google login succesful' : 'email login succesfull',
+        message: user?.photoURL ? 'google login succesful' : 'email login succesfull',
         token,
         user: userData,
       });
@@ -214,8 +214,8 @@ export const cancelAppointment = async (req: Request, res: Response) => {
     if (!appointment) return res.status(200).send({ success: false, message: 'Appointment not found' });
 
     const refund = await stripe.refunds.create({
-      payment_intent: appointment.payment_intent,
-      amount: appointment.price,
+      payment_intent: appointment?.payment_intent,
+      amount: appointment?.price,
     });
 
     return res.status(200).send({ success: true, message: 'Appointment cancelled successfully' });
@@ -243,7 +243,6 @@ export const checkAvailableTiming = async (req: Request, res: Response) => {
   try {
     const { date, doctorId } = req.body;
     const response = await APPOINTMENT.find({ date, doctorId }).select('time').exec();
-    console.log(response);
     return res.status(200).send({ success: true, message: 'Check Availability Successful', data: response });
   } catch (error) {
     console.log(error);
@@ -271,7 +270,12 @@ export const reportDoctor = async (req: Request, res: Response) => {
 
 export const createFeedback = async (req: Request, res: Response) => {
   try {
-    const { doctorId, userId, rating, feedback } = req.body;
+    const {
+      doctorId,
+      userId,
+      rating,
+      feedback,
+    } = req.body;
 
     const newFeedback = await new FEEDBACK({
       doctorId,

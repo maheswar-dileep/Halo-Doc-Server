@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import Stripe from 'stripe';
 import mongoose from 'mongoose';
 import { APPOINTMENT, BLOG, DOCTOR } from '../model/export.js';
-import { IAppointment, IBlog, IDoctor } from '../Types/interface.js';
+import { IBlog, IDoctor } from '../Types/interface.js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET, {
   apiVersion: '2022-11-15',
@@ -70,6 +70,7 @@ export const getAppointments = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const data = await APPOINTMENT.find({ doctorId: id });
+    console.log(data);
 
     return res.status(200).send({ success: true, message: 'Get Appointments Successful', data });
   } catch (error) {

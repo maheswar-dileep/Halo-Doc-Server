@@ -8,11 +8,11 @@ export const newConversation = async (req: Request, res: Response) => {
     const { senderId, recieverId } = req.body;
 
     const newConvs = await new CONVERSATION({ members: [recieverId, senderId] });
-    await newConvs.save();
+    const data = await newConvs.save();
 
-    return res.status(500).send({ success: true, message: 'Conversation Created Successfully' });
+    return res.status(200).send({ success: true, message: 'Conversation Created Successfully', convId: data._id });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).send({ success: true, message: 'Internal Server Error' });
   }
 };
