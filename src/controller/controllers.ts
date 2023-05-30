@@ -9,7 +9,7 @@ export const getAllBlogs = async (req: Request, res: Response) => {
 
     const options = {
       page: page || 1,
-      limit: 8,
+      limit: 12,
     };
 
     const data = await BLOG.paginate({}, options);
