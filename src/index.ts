@@ -27,7 +27,18 @@ connection();
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan('tiny'));
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      'halo-doc.maheswar.live',
+      'admin.maheswar.live',
+      'doctor.maheswar.live',
+      'http://localhost:5173',
+      'http://localhost:5174',
+      'http://localhost:5175',
+    ],
+  }),
+);
 
 /*
  *API Routes]
