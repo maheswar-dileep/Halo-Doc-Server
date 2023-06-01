@@ -5,6 +5,7 @@ import * as controller from '../controller/doctorController.js';
 const router = express.Router();
 
 //* login
+
 router.route('/login').post(controller.login);
 
 //* appointments
@@ -17,6 +18,10 @@ router.route('/get-doctor/:id').get(controller.getDoctor);
 router.route('/edit-doctor/:id').patch(controller.editDoctor);
 router.route('/patients/:id').get(controller.getPatients);
 router.route('/get-total-revenue/:id').get(controller.getTotalRevenue);
+
+//* Add Prescription
+
+router.route('/add-prescription').post(controller.addPrescription);
 
 //* apply for Leave
 

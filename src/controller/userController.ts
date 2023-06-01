@@ -6,6 +6,7 @@ import { USER, APPOINTMENT, DOCTOR, REPORT_DOCTOR, FEEDBACK } from '../model/exp
 import RequestDefenition from '../defenitions.js';
 import verifyFirebaseToken from '../config/firebase.js';
 import mailService from '../utils/nodemailer.js';
+import mongoose from 'mongoose';
 
 dotenv.config();
 const stripe = new Stripe(process.env.STRIPE_SECRET, {
@@ -85,11 +86,14 @@ export const login = async (req: Request, res: Response) => {
 
 //* Get User Info
 
-export const getUserInfo = (req: RequestDefenition, res: Response) => {
+export const getUserInfo = async (req: Request, res: Response) => {
   try {
-    return res.status(200).send({ success: true, message: 'get user successful' });
+    const { id } = req.params;
+    const user = await USER.findById(id);
+
+    return res.status(200).send({ success: true, message: 'get user successful', data: user });
   } catch (error) {
-    console.log(error);
+    console.log('Error in userController : get user info :-', error);
     return res.status(500).send({ success: false, message: 'internal server error' });
   }
 };
@@ -270,12 +274,7 @@ export const reportDoctor = async (req: Request, res: Response) => {
 
 export const createFeedback = async (req: Request, res: Response) => {
   try {
-    const {
-      doctorId,
-      userId,
-      rating,
-      feedback,
-    } = req.body;
+    const { doctorId, userId, rating, feedback } = req.body;
 
     const newFeedback = await new FEEDBACK({
       doctorId,

@@ -11,7 +11,7 @@ router.route('/login').post(controller.login); //! user login
 
 //* get doctors
 
-router.route('/get-user-info').post(auth, controller.getUserInfo);
+router.route('/get-user-info/:id').get(auth, controller.getUserInfo);
 router.route('/doctors-by-department').get(controller.getDoctorsbyDept); //! doctors by department
 
 //* Payment

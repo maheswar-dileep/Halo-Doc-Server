@@ -78,5 +78,5 @@ export interface IUser {
   email: string;
   profileURL: string;
   blocked: boolean;
-  notification: Array<object>;
+  prescription: Array<object>;
 }

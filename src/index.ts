@@ -37,7 +37,7 @@ app.use(
       'http://localhost:5174',
       'http://localhost:5175',
     ],
-  }),
+  })
 );
 
 /*
@@ -66,7 +66,7 @@ app.use((req, res) => {
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ['http://localhost:5174', 'http://localhost:5175'],
+    origin: ['http://localhost:5174', 'http://localhost:5175', 'halo-doc.maheswar.live', 'admin.maheswar.live'],
     methods: ['GET', 'POST'],
   },
 });
@@ -90,7 +90,7 @@ io.on('connection', (socket) => {
   // console.log(`Socket ${socket.id} connected`);
 
   socket.on('addUser', (userId) => {
-    console.log(userId);
+    // console.log(userId);
     addUser(userId, socket.id);
   });
 
@@ -98,7 +98,7 @@ io.on('connection', (socket) => {
 
   socket.on('sendMessage', ({ senderId, recieverId, text }) => {
     const user = getUser(recieverId);
-    console.log(user, 'userse');
+    // console.log(user, 'userse');
     io.to(user?.socketId).emit('getMessage', {
       senderId,
       text,
@@ -106,7 +106,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    console.log(`Socket ${socket.id} disconnected`);
+    // console.log(`Socket ${socket.id} disconnected`);
     removeUser(socket.id);
   });
 });

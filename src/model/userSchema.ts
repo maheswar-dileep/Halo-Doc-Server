@@ -19,7 +19,7 @@ const userSchema = new Schema<IUser>({
     type: Boolean,
     default: true,
   },
-  notification: {
+  prescription: {
     type: [Object],
   },
 });
