@@ -66,7 +66,7 @@ app.use((req, res) => {
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ['http://localhost:5174', 'http://localhost:5175', 'halo-doc.maheswar.live', 'admin.maheswar.live'],
+    origin: ['http://localhost:5174', 'http://localhost:5175', 'https://halo-doc.maheswar.live', 'https://doctor.maheswar.live'],
     methods: ['GET', 'POST'],
   },
 });
