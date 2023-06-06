@@ -6,28 +6,28 @@ const router = express.Router();
 
 //* Signup Login
 
-router.route('/signup').post(controller.signup); //! user signup
-router.route('/login').post(controller.login); //! user login
+router.route('/signup').post(controller.signup);
+router.route('/login').post(controller.login);
 
 //* get doctors
 
 router.route('/get-user-info/:id').get(auth, controller.getUserInfo);
-router.route('/doctors-by-department').get(controller.getDoctorsbyDept); //! doctors by department
+router.route('/doctors-by-department').get(auth, controller.getDoctorsbyDept);
 
 //* Payment
 
-router.route('/payment').post(controller.payment); //! Payment
-router.route('/webhook').post(controller.webHooks); //! Payment WebHooks
+router.route('/payment').post(auth, controller.payment);
+router.route('/webhook').post(auth, controller.webHooks);
 
 //* Appoinment
 
-router.route('/appointment/cancel-appointment/:id').patch(controller.cancelAppointment); //! Cancel appointment
-router.route('/create-notifications').post(controller.createNotification); //! Create Notification
-router.route('/check-available-timing').post(controller.checkAvailableTiming); //! Check Available Timing
+router.route('/appointment/cancel-appointment/:id').patch(auth, controller.cancelAppointment);
+router.route('/create-notifications').post(auth, controller.createNotification);
+router.route('/check-available-timing').post(auth, controller.checkAvailableTiming);
 
 //* report / feedback
 
-router.route('/report-doctor').post(controller.reportDoctor); //!  Report Doctor
-router.route('/feedback').post(controller.createFeedback); //!  feedback
+router.route('/report-doctor').post(auth, controller.reportDoctor);
+router.route('/feedback').post(auth, controller.createFeedback);
 
 export default router;
