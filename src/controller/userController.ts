@@ -147,9 +147,10 @@ export const webHooks = async (req: Request, res: Response) => {
         const customer = await stripe.customers.retrieve(data.customer);
         let appointments = customer?.metadata?.appointments;
         appointments = JSON.parse(appointments);
+        console.log('webhooks appointments :', appointments);
         appointments.payment_intent = data?.payment_intent;
         const newAppointment = new APPOINTMENT(appointments);
-        newAppointment.save();
+        console.log(newAppointment.save());
       }
     } catch (error) {
       console.log(error);
