@@ -5,7 +5,7 @@ import { IAppointment } from '../Types/interface.js';
 const appointmentSchema = new Schema<IAppointment>({
   userId: {
     type: String,
-    required: true,
+    // required: true,
   },
   firstName: {
     type: String,

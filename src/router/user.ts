@@ -22,12 +22,15 @@ router.route('/webhook').post(auth, controller.webHooks);
 //* Appoinment
 
 router.route('/appointment/cancel-appointment/:id').patch(auth, controller.cancelAppointment);
-router.route('/create-notifications').post(auth, controller.createNotification);
 router.route('/check-available-timing').post(auth, controller.checkAvailableTiming);
 
 //* report / feedback
 
 router.route('/report-doctor').post(auth, controller.reportDoctor);
 router.route('/feedback').post(auth, controller.createFeedback);
+
+//* update Profile
+
+router.route('/update-profile').patch(auth, controller.updateProfile);
 
 export default router;

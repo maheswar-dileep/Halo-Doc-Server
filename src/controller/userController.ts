@@ -3,10 +3,9 @@ import { Request, Response } from 'express';
 import Stripe from 'stripe';
 import jwt from 'jsonwebtoken';
 import { USER, APPOINTMENT, DOCTOR, REPORT_DOCTOR, FEEDBACK } from '../model/export.js';
-import RequestDefenition from '../defenitions.js';
 import verifyFirebaseToken from '../config/firebase.js';
 import mailService from '../utils/nodemailer.js';
-import mongoose from 'mongoose';
+import { IUser } from '../Types/interface.js';
 
 dotenv.config();
 const stripe = new Stripe(process.env.STRIPE_SECRET, {
@@ -229,18 +228,6 @@ export const cancelAppointment = async (req: Request, res: Response) => {
   }
 };
 
-//* Create Notification
-
-export const createNotification = async (req: Request, res: Response) => {
-  try {
-    const { userId, text } = req.body;
-    const result = USER.updateOne({ _id: userId }, {});
-  } catch (error) {
-    console.log(error);
-    return res.status(500).send({ success: false, message: 'Internal Server Error' });
-  }
-};
-
 //* Check Available Timing
 
 export const checkAvailableTiming = async (req: Request, res: Response) => {
@@ -287,6 +274,30 @@ export const createFeedback = async (req: Request, res: Response) => {
     return res.status(200).send({ success: true, message: 'Feedback added successfully' });
   } catch (error) {
     console.log(error);
+    return res.status(500).send({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+export const updateProfile = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    if (!id) return res.status(406).send({ success: false, message: 'Invalid token' });
+
+    const user: IUser | null = await USER.findById(id);
+    if (!user) return res.status(404).send({ success: false, message: 'User not found' });
+
+    const { name, email } = req.body;
+
+    const data = {
+      name: name || user.name,
+      email: email || user.email,
+    };
+
+    await USER.findByIdAndUpdate(id, data);
+
+    return res.status(200).send({ success: true, message: 'Update profile successful' });
+  } catch (error) {
+    console.error('Error in user controller: Update Profile :-', error);
     return res.status(500).send({ success: false, message: 'Internal Server Error' });
   }
 };
