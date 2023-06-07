@@ -1,8 +1,10 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 import paginate from 'mongoose-paginate-v2';
 import { IReportDoctor } from '../Types/interface.js';
 
-const reportDoctorSchema = new Schema<IReportDoctor>({
+interface ReportDocument extends IReportDoctor, Document {}
+
+const reportDoctorSchema = new Schema<ReportDocument>({
   doctorId: {
     type: String,
     required: true,

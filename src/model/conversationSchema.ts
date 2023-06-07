@@ -1,7 +1,9 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 import { IConversation } from '../Types/interface.js';
 
-const conversationSchema = new Schema<IConversation>(
+interface ConversationDocument extends IConversation, Document {}
+
+const conversationSchema = new Schema<ConversationDocument>(
   {
     members: {
       type: [String],

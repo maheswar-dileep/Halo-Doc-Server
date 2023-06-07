@@ -1,7 +1,9 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 import { IMessage } from '../Types/interface.js';
 
-const messageSchema = new Schema<IMessage>(
+interface MessageDocument extends IMessage, Document {}
+
+const messageSchema = new Schema<MessageDocument>(
   {
     conversationId: {
       type: String,

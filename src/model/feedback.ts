@@ -1,10 +1,10 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 import paginate from 'mongoose-paginate-v2';
 import { IFeedback } from '../Types/interface.js';
 
 interface FeedbackDocument extends IFeedback, Document {}
 
-const feedbackSchema = new Schema<IFeedback>({
+const feedbackSchema = new Schema<FeedbackDocument>({
   doctorId: {
     type: String,
     required: true,

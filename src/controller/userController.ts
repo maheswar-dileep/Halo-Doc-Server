@@ -2,7 +2,9 @@ import dotenv from 'dotenv';
 import { Request, Response } from 'express';
 import Stripe from 'stripe';
 import jwt from 'jsonwebtoken';
-import { USER, APPOINTMENT, DOCTOR, REPORT_DOCTOR, FEEDBACK } from '../model/export.js';
+import {
+  USER, APPOINTMENT, DOCTOR, REPORT_DOCTOR, FEEDBACK,
+} from '../model/export.js';
 import verifyFirebaseToken from '../config/firebase.js';
 import mailService from '../utils/nodemailer.js';
 import { IAppointment, IUser } from '../Types/interface.js';
@@ -88,7 +90,7 @@ export const login = async (req: Request, res: Response) => {
 export const getUserInfo = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const user = await USER.findById(id);
+    const user = await USER.findById(id).exec();
 
     return res.status(200).send({ success: true, message: 'get user successful', data: user });
   } catch (error) {
@@ -145,6 +147,7 @@ export const webHooks = async (req: Request, res: Response) => {
     try {
       if (eventType === 'checkout.session.completed') {
         const customer = await stripe.customers.retrieve(data.customer);
+        // eslint-disable-next-line prefer-destructuring, @typescript-eslint/dot-notation
         let appointments = customer['metadata'].appointments;
         appointments = JSON.parse(appointments);
         console.log('webhooks appointments :', appointments);
@@ -262,7 +265,9 @@ export const reportDoctor = async (req: Request, res: Response) => {
 
 export const createFeedback = async (req: Request, res: Response) => {
   try {
-    const { doctorId, userId, rating, feedback } = req.body;
+    const {
+      doctorId, userId, rating, feedback,
+    } = req.body;
 
     const newFeedback = await new FEEDBACK({
       doctorId,
