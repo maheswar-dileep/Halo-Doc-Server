@@ -19,5 +19,7 @@ module.exports = {
   },
   ignorePatterns: ['.eslintrc.cjs'],
   plugins: ['@typescript-eslint'],
-  rules: {},
+  rules: {
+    'no-underscore-dangle': 'off',
+  },
 };

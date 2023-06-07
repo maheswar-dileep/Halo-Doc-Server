@@ -4,6 +4,10 @@ export interface IAdmin {
   password: string;
 }
 
+export interface Ioptions {
+  page: number;
+  limit: number;
+}
 export interface IAppointment {
   userId: string;
   firstName: string;

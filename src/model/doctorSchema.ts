@@ -1,8 +1,10 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Schema, Document } from 'mongoose';
 import paginate from 'mongoose-paginate-v2';
 import { IDoctor } from '../Types/interface.js';
 
-const doctorSchema = new Schema<IDoctor>({
+interface DoctorDocument extends IDoctor, Document {}
+
+const doctorSchema = new Schema<DoctorDocument>({
   firstName: {
     type: String,
     required: true,
@@ -57,5 +59,6 @@ const doctorSchema = new Schema<IDoctor>({
 });
 
 doctorSchema.plugin(paginate);
-const doctorModel = mongoose.model<IDoctor>('doctor', doctorSchema);
+
+const doctorModel = mongoose.model<DoctorDocument, mongoose.PaginateModel<DoctorDocument>>('Doctor', doctorSchema);
 export default doctorModel;

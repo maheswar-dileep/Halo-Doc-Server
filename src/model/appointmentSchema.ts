@@ -1,8 +1,10 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 import paginate from 'mongoose-paginate-v2';
 import { IAppointment } from '../Types/interface.js';
 
-const appointmentSchema = new Schema<IAppointment>({
+interface AppointmentDocument extends IAppointment, Document {}
+
+const appointmentSchema = new Schema<AppointmentDocument>({
   userId: {
     type: String,
     required: true,
@@ -77,6 +79,5 @@ const appointmentSchema = new Schema<IAppointment>({
 });
 
 appointmentSchema.plugin(paginate);
-
-const appointmentModel = mongoose.model<IAppointment>('appointment', appointmentSchema);
+const appointmentModel = mongoose.model<AppointmentDocument, mongoose.PaginateModel<AppointmentDocument>>('appointment', appointmentSchema);
 export default appointmentModel;

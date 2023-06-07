@@ -1,8 +1,10 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 import paginate from 'mongoose-paginate-v2';
 import { IUser } from '../Types/interface.js';
 
-const userSchema = new Schema<IUser>({
+interface UserDocument extends IUser, Document {}
+
+const userSchema = new Schema<UserDocument>({
   name: {
     type: String,
     required: true,
@@ -15,15 +17,11 @@ const userSchema = new Schema<IUser>({
     type: String,
     required: true,
   },
-  blocked: {
-    type: Boolean,
-    default: true,
-  },
   prescription: {
     type: [Object],
   },
 });
 
 userSchema.plugin(paginate);
-const userModel = mongoose.model<IUser>('user', userSchema);
+const userModel = mongoose.model<UserDocument, mongoose.PaginateModel<UserDocument>>('user', userSchema);
 export default userModel;

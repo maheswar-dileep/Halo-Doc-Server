@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import { USER, APPOINTMENT, DOCTOR, REPORT_DOCTOR, FEEDBACK } from '../model/export.js';
 import verifyFirebaseToken from '../config/firebase.js';
 import mailService from '../utils/nodemailer.js';
-import { IUser } from '../Types/interface.js';
+import { IAppointment, IUser } from '../Types/interface.js';
 
 dotenv.config();
 const stripe = new Stripe(process.env.STRIPE_SECRET, {
@@ -145,7 +145,7 @@ export const webHooks = async (req: Request, res: Response) => {
     try {
       if (eventType === 'checkout.session.completed') {
         const customer = await stripe.customers.retrieve(data.customer);
-        let appointments = customer?.metadata?.appointments;
+        let appointments = customer['metadata'].appointments;
         appointments = JSON.parse(appointments);
         console.log('webhooks appointments :', appointments);
         appointments.payment_intent = data?.payment_intent;
@@ -214,10 +214,10 @@ export const cancelAppointment = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const appointment = await APPOINTMENT.find({ id });
+    const appointment: any = await APPOINTMENT.find({ _id: id });
     if (!appointment) return res.status(200).send({ success: false, message: 'Appointment not found' });
 
-    const refund = await stripe.refunds.create({
+    await stripe.refunds.create({
       payment_intent: appointment?.payment_intent,
       amount: appointment?.price,
     });

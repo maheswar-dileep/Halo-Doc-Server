@@ -1,8 +1,10 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 import paginate from 'mongoose-paginate-v2';
 import { IAdmin } from '../Types/interface.js';
 
-const adminSchema = new Schema<IAdmin>({
+interface AdminDocument extends IAdmin, Document {}
+
+const adminSchema = new Schema<AdminDocument>({
   name: {
     type: String,
     required: true,
@@ -19,5 +21,5 @@ const adminSchema = new Schema<IAdmin>({
 
 adminSchema.plugin(paginate);
 
-const adminModel = mongoose.model<IAdmin>('admin', adminSchema);
+const adminModel = mongoose.model<AdminDocument, mongoose.PaginateModel<AdminDocument>>('admin', adminSchema);
 export default adminModel;

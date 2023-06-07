@@ -6,13 +6,30 @@ import mongoose from 'mongoose';
 import {
   APPOINTMENT, BLOG, DOCTOR, USER,
 } from '../model/export.js';
-import { IBlog, IDoctor } from '../Types/interface.js';
+import { IBlog } from '../Types/interface.js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET, {
   apiVersion: '2022-11-15',
 });
 
 //* Login
+
+interface IDoctor {
+  _id:string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: number;
+  address: string;
+  profile: string;
+  photoURL: string;
+  dob: string;
+  department: string;
+  workTime: string;
+  fees: string;
+  leave: Array<string>;
+  password: string;
+}
 
 export const login = async (req: Request, res: Response) => {
   try {

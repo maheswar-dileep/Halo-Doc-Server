@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { BLOG, DEPARTMENT, DOCTOR } from '../model/export.js';
+import { Ioptions } from '../Types/interface.js';
 
 //* Get-all-blogs
 
@@ -7,8 +8,8 @@ export const getAllBlogs = async (req: Request, res: Response) => {
   try {
     const { page } = req.query;
 
-    const options = {
-      page: page || 1,
+    const options: Ioptions = {
+      page: Number(page) || 1,
       limit: 12,
     };
 
@@ -25,8 +26,8 @@ export const getAllDoctors = async (req: Request, res: Response) => {
   try {
     const { page } = req.query;
 
-    const options = {
-      page: page || 1,
+    const options: Ioptions = {
+      page: Number(page) || 1,
       limit: 12,
     };
     const data = await DOCTOR.paginate({}, options);

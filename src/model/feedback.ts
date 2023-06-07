@@ -1,6 +1,8 @@
-import mongoose, { Schema, Types } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import paginate from 'mongoose-paginate-v2';
 import { IFeedback } from '../Types/interface.js';
+
+interface FeedbackDocument extends IFeedback, Document {}
 
 const feedbackSchema = new Schema<IFeedback>({
   doctorId: {
@@ -21,5 +23,5 @@ const feedbackSchema = new Schema<IFeedback>({
 });
 
 feedbackSchema.plugin(paginate);
-const feedbackModel = mongoose.model<IFeedback>('Feedback', feedbackSchema);
+const feedbackModel = mongoose.model<FeedbackDocument, mongoose.PaginateModel<FeedbackDocument>>('Feedback', feedbackSchema);
 export default feedbackModel;

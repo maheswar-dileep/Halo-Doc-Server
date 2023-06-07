@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import Stripe from 'stripe';
 import { v2 as cloudinary } from 'cloudinary';
 import { ADMIN, DOCTOR, DEPARTMENT, BLOG, USER, FEEDBACK, REPORT_DOCTOR, APPOINTMENT } from '../model/export.js';
+import { Ioptions } from '../Types/interface.js';
 
 dotenv.config();
 
@@ -129,8 +130,8 @@ export const addDoctor = async (req: Request, res: Response) => {
 export const getAllDoctors = async (req: Request, res: Response) => {
   try {
     const { page } = req.query;
-    const options = {
-      page: page || 1,
+    const options: Ioptions = {
+      page: Number(page) || 1,
       limit: 8,
     };
 
@@ -154,7 +155,7 @@ export const deleteDoctor = async (req: Request, res: Response) => {
       res.status(200).send({ success: true, message: `DR. ${doctor.firstName} deleted succesfully` });
     }
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(500).send({ success: false, message: 'internal server error' });
   }
 };
@@ -263,8 +264,8 @@ export const getAllUsers = async (req: Request, res: Response) => {
   try {
     const { page } = req.query;
 
-    const options = {
-      page: page || 1,
+    const options: Ioptions = {
+      page: Number(page) || 1,
       limit: 6,
     };
 
@@ -274,27 +275,6 @@ export const getAllUsers = async (req: Request, res: Response) => {
   } catch (error) {
     console.log('Error in admin - Get All Users :-', error);
     res.status(500).send({ success: false, message: 'Internal server error' });
-  }
-};
-
-//* Block-User
-
-export const blockUser = async (req: Request, res: Response) => {
-  try {
-    let block: boolean;
-    const { id } = req.params;
-    const user = await USER.find({ _id: id });
-    if (user.blocked) block = false;
-    else block = true;
-
-    const blocked = await USER.updateOne({ _id: id }, { $set: { blocked: block } });
-
-    if (blocked.acknowledged) {
-      res.status(200).send({ success: true, message: `${user.blocked ? 'unblocked' : 'blocked'} user` });
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(500).send({ success: false, message: 'Internal Server Error' });
   }
 };
 
@@ -322,81 +302,81 @@ export const getUserFeedbacks = async (req: Request, res: Response) => {
   }
 };
 
-//* Get Payments List
+// //* Get Payments List
 
-export const getPaymentsList = async (req: Request, res: Response) => {
-  try {
-    const PAGE_SIZE = 8;
-    const options = {
-      limit: PAGE_SIZE,
-    };
-    let charges;
-    const { page } = req.query;
+// export const getPaymentsList = async (req: Request, res: Response) => {
+//   try {
+//     const PAGE_SIZE = 8;
+//     const options = {
+//       limit: PAGE_SIZE,
+//     };
+//     let charges;
+//     const { page } = req.query;
 
-    if (page === 'next' && req.query.lastPaymentId) {
-      //* To get the next page of charges
+//     if (page === 'next' && req.query.lastPaymentId) {
+//       //* To get the next page of charges
 
-      charges = await stripe.charges.list({
-        ...options,
-        starting_after: req.query.lastPaymentId,
-      });
-    } else if (page === 'prev' && req.query.firstPaymentId) {
-      //* To get the previous page of charges
+//       charges = await stripe.charges.list({
+//         ...options,
+//         starting_after: req.query.lastPaymentId,
+//       });
+//     } else if (page === 'prev' && req.query.firstPaymentId) {
+//       //* To get the previous page of charges
 
-      charges = await stripe.charges.list({
-        ...options,
-        ending_before: req.query.firstPaymentId,
-      });
-    } else {
-      //* To get the first page of charges
+//       charges = await stripe.charges.list({
+//         ...options,
+//         ending_before: req.query.firstPaymentId,
+//       });
+//     } else {
+//       //* To get the first page of charges
 
-      charges = await stripe.charges.list(options);
-    }
+//       charges = await stripe.charges.list(options);
+//     }
 
-    res.status(200).send({ success: true, message: 'Get Payments Successful', payments: charges });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send({ success: false, message: 'Internal Server Error' });
-  }
-};
+//     res.status(200).send({ success: true, message: 'Get Payments Successful', payments: charges });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).send({ success: false, message: 'Internal Server Error' });
+//   }
+// };
 
-//* Get Payments refund List
+// //* Get Payments refund List
 
-export const getPaymentsRefundList = async (req: Request, res: Response) => {
-  try {
-    const PAGE_SIZE = 3;
-    const options = {
-      limit: PAGE_SIZE,
-    };
-    let refunds;
-    const { page } = req.query;
+// export const getPaymentsRefundList = async (req: Request, res: Response) => {
+//   try {
+//     const PAGE_SIZE = 3;
+//     const options = {
+//       limit: PAGE_SIZE,
+//     };
+//     let refunds;
+//     const { page } = req.query;
 
-    if (page === 'next' && req.query.lastRefundId) {
-      //* To get the next page of refunds
+//     if (page === 'next' && req.query.lastRefundId) {
+//       //* To get the next page of refunds
 
-      refunds = await stripe.refunds.list({
-        ...options,
-        starting_after: req.query.lastRefundId,
-      });
-    } else if (page === 'prev' && req.query.firstRefundId) {
-      //* To get the previous page of refunds
+//       refunds = await stripe.refunds.list({
+//         ...options,
+//         starting_after: req.query.lastRefundId,
+//       });
+//     } else if (page === 'prev' && req.query.firstRefundId) {
+//       //* To get the previous page of refunds
 
-      refunds = await stripe.refunds.list({
-        ...options,
-        ending_before: req.query.firstRefundId,
-      });
-    } else {
-      //* To get the first page of refunds
+//       refunds = await stripe.refunds.list({
+//         ...options,
+//         ending_before: req.query.firstRefundId,
+//       });
+//     } else {
+//       //* To get the first page of refunds
 
-      refunds = await stripe.refunds.list(options);
-    }
+//       refunds = await stripe.refunds.list(options);
+//     }
 
-    res.status(200).send({ success: true, message: 'Get Refunds Successful', refunds });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send({ success: false, message: 'Internal Server Error' });
-  }
-};
+//     res.status(200).send({ success: true, message: 'Get Refunds Successful', refunds });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).send({ success: false, message: 'Internal Server Error' });
+//   }
+// };
 
 //* get revenue
 

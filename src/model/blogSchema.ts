@@ -1,8 +1,10 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 import paginate from 'mongoose-paginate-v2';
 import { IBlog } from '../Types/interface.js';
 
-const blogSchema = new Schema<IBlog>({
+interface BlogDocument extends IBlog, Document {}
+
+const blogSchema = new Schema<BlogDocument>({
   title: {
     type: String,
     required: true,
@@ -18,5 +20,5 @@ const blogSchema = new Schema<IBlog>({
 });
 
 blogSchema.plugin(paginate);
-const blogModel = mongoose.model<IBlog>('blog', blogSchema);
+const blogModel = mongoose.model<BlogDocument, mongoose.PaginateModel<BlogDocument>>('Blog', blogSchema);
 export default blogModel;
