@@ -190,7 +190,8 @@ export const payment = async (req: Request, res: Response) => {
         cancel_url: `${process.env.CLIENT_URL}/failure`,
       });
 
-      const newAppointment = APPOINTMENT.create(bodyData);
+      const newAppointment = new APPOINTMENT(bodyData);
+      newAppointment.save();
 
       return res.status(200).send({ success: true, message: 'payment successful', url: session.url });
     } catch (error) {
