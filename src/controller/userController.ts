@@ -160,6 +160,9 @@ export const payment = async (req: Request, res: Response) => {
   try {
     const bodyData = req.body;
     try {
+      const newAppointment = new APPOINTMENT(bodyData);
+      newAppointment.save();
+
       const customer = await stripe.customers.create({
         metadata: {
           userId: bodyData.userId,
@@ -189,9 +192,6 @@ export const payment = async (req: Request, res: Response) => {
         success_url: `${process.env.CLIENT_URL}/success`,
         cancel_url: `${process.env.CLIENT_URL}/failure`,
       });
-
-      const newAppointment = new APPOINTMENT(bodyData);
-      newAppointment.save();
 
       return res.status(200).send({ success: true, message: 'payment successful', url: session.url });
     } catch (error) {
