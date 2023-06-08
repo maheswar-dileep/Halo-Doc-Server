@@ -2,9 +2,7 @@ import dotenv from 'dotenv';
 import { Request, Response } from 'express';
 import Stripe from 'stripe';
 import jwt from 'jsonwebtoken';
-import {
-  USER, APPOINTMENT, DOCTOR, REPORT_DOCTOR, FEEDBACK,
-} from '../model/export.js';
+import { USER, APPOINTMENT, DOCTOR, REPORT_DOCTOR, FEEDBACK } from '../model/export.js';
 import verifyFirebaseToken from '../config/firebase.js';
 import mailService from '../utils/nodemailer.js';
 import { IAppointment, IUser } from '../Types/interface.js';
@@ -116,27 +114,22 @@ export const getDoctorsbyDept = async (req: Request, res: Response) => {
 
 export const webHooks = async (req: Request, res: Response) => {
   try {
+    const sig = req.headers['stripe-signature'];
+    const endpointSecret = null;
+    let event;
+    const jsonStringify = JSON.stringify(req.body);
+    const payloadBuffer = Buffer.from(jsonStringify);
     let data;
     let eventType;
-    let event;
-
-    const endpointSecret: string = process.env.STRIPE_END_POINT_SECRET;
 
     if (endpointSecret) {
-      const payloadString = JSON.stringify(req.body, null, 2);
-
-      const header = stripe.webhooks.generateTestHeaderString({
-        payload: payloadString,
-        secret: endpointSecret,
-      });
-
       try {
-        event = stripe.webhooks.constructEvent(payloadString, header, endpointSecret);
+        event = stripe.webhooks.constructEvent(payloadBuffer, sig, endpointSecret);
+        // console.log('webhook verified');
       } catch (err) {
-        res.status(400).send(`Webhook Error: ${err.message}`);
-        return;
+        console.log(`Webhook Error: ${err.message}`);
+        return res.status(400).send(`Webhook Error: ${err.message}`);
       }
-
       data = event.data.object;
       eventType = event.type;
     } else {
@@ -147,20 +140,17 @@ export const webHooks = async (req: Request, res: Response) => {
     try {
       if (eventType === 'checkout.session.completed') {
         const customer = await stripe.customers.retrieve(data.customer);
-        // eslint-disable-next-line prefer-destructuring, @typescript-eslint/dot-notation
-        let appointments = customer['metadata'].appointments;
-        appointments = JSON.parse(appointments);
-        console.log('webhooks appointments :', appointments);
-        appointments.payment_intent = data?.payment_intent;
-        const newAppointment = new APPOINTMENT(appointments);
-        console.log(newAppointment.save());
+        // eslint-disable-next-line @typescript-eslint/dot-notation
+        const appointments = customer?.['metadata']?.appointments;
+        const newAppointment = new APPOINTMENT(JSON.parse(appointments));
+        newAppointment.save();
       }
     } catch (error) {
-      console.log(error);
+      console.log(`Webhook Error: ${error.message}`);
     }
-    res.send().end();
+    return res.send().end();
   } catch (error) {
-    console.log(error);
+    console.log(`Webhook Error: ${error.message}`);
   }
 };
 
@@ -199,6 +189,8 @@ export const payment = async (req: Request, res: Response) => {
         success_url: `${process.env.CLIENT_URL}/success`,
         cancel_url: `${process.env.CLIENT_URL}/failure`,
       });
+
+      const newAppointment = APPOINTMENT.create(bodyData);
 
       return res.status(200).send({ success: true, message: 'payment successful', url: session.url });
     } catch (error) {
@@ -265,9 +257,7 @@ export const reportDoctor = async (req: Request, res: Response) => {
 
 export const createFeedback = async (req: Request, res: Response) => {
   try {
-    const {
-      doctorId, userId, rating, feedback,
-    } = req.body;
+    const { doctorId, userId, rating, feedback } = req.body;
 
     const newFeedback = await new FEEDBACK({
       doctorId,

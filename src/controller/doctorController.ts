@@ -89,7 +89,6 @@ export const getAppointments = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const data = await APPOINTMENT.find({ doctorId: id });
-    console.log(data);
 
     return res.status(200).send({ success: true, message: 'Get Appointments Successful', data });
   } catch (error) {

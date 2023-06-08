@@ -1,4 +1,5 @@
 /node_modules
 /build
 /config
+bundle.js
 /src/middlewares/userBlocked.ts
