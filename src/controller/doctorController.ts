@@ -46,7 +46,7 @@ export const login = async (req: Request, res: Response) => {
       // Credential verified
       // Creating a JWT token
       const token: string = jwt.sign({ id: doctor._id }, process.env.JWT_SECRET, {
-        expiresIn: '1d',
+        expiresIn: '10d',
       });
       doctor.password = null;
       return res.status(200).send({

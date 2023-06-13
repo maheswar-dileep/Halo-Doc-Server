@@ -5,9 +5,9 @@ const router = express.Router();
 
 //* blogs
 
-router.route('/blogs/get-all-blogs').get(controller.getAllBlogs); //! get-all-blogs
-router.route('/get-department').get(controller.getDepartments); //! get-Department
-router.route('/get-doctors').get(controller.getAllDoctors); //! get-Department
+router.route('/blogs/get-all-blogs').get(controller.getAllBlogs);
+router.route('/get-department').get(controller.getDepartments);
+router.route('/get-doctors').get(controller.getAllDoctors);
 router.route('/search-doctors').get(controller.searchDoctors);
 
 export default router;

@@ -33,14 +33,14 @@ app.use(morgan('tiny'));
 app.use(
   cors({
     origin: [
-      'https://halo-doc.maheswar.live',
-      'https://admin.maheswar.live',
-      'https://doctor.maheswar.live',
+      'https://halo-doc.rigx.ml',
+      'https://admin.rigx.ml',
+      'https://doctor.rigx.ml',
       'http://localhost:5173',
       'http://localhost:5174',
       'http://localhost:5175',
     ],
-  })
+  }),
 );
 
 /*
@@ -72,8 +72,8 @@ const io = new Server(server, {
     origin: [
       'http://localhost:5174',
       'http://localhost:5175',
-      'https://halo-doc.maheswar.live',
-      'https://doctor.maheswar.live',
+      'https://halo-doc.rigx.ml',
+      'https://doctor.rigx.ml',
     ],
     methods: ['GET', 'POST'],
   },
