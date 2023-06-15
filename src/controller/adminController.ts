@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import Stripe from 'stripe';
 import { v2 as cloudinary } from 'cloudinary';
-import * as exportJs from '../model/export.js';
+import { ADMIN, APPOINTMENT, BLOG, DEPARTMENT, DOCTOR, FEEDBACK, REPORT_DOCTOR, USER } from '../model/index.js';
 import { Ioptions } from '../Types/interface.js';
 
 dotenv.config();
@@ -31,7 +31,7 @@ export const login = async (req: Request, res: Response) => {
   try {
     //* validating email *
 
-    const user = await exportJs.ADMIN.findOne({ email: req.body.email });
+    const user = await ADMIN.findOne({ email: req.body.email });
     if (!user) {
       // If no user returning error response with code 200
       return res.status(200).send({ success: false, message: 'user does not exist', error: 'email' });
@@ -93,7 +93,7 @@ export const addDoctor = async (req: Request, res: Response) => {
       photoURL,
     }: IUserReqBody = req.body;
 
-    const doctorExists = await exportJs.DOCTOR.findOne({ email });
+    const doctorExists = await DOCTOR.findOne({ email });
     if (doctorExists) {
       // if doctor already exists with same email returning error with response code 200
       return res.status(200).send({ success: false, message: 'Doctor already exists' });
@@ -115,7 +115,7 @@ export const addDoctor = async (req: Request, res: Response) => {
     };
 
     // Adding New Doctor to Database
-    const newDoctor = new exportJs.DOCTOR(doctor);
+    const newDoctor = new DOCTOR(doctor);
     newDoctor.save();
 
     return res.status(200).json({ success: true, message: 'Doctor added succesfully' });
@@ -135,7 +135,7 @@ export const getAllDoctors = async (req: Request, res: Response) => {
       limit: 8,
     };
 
-    const data = await exportJs.DOCTOR.paginate({}, options);
+    const data = await DOCTOR.paginate({}, options);
     res.status(200).send({ success: true, message: 'get All doctors succesfull', data });
   } catch (error) {
     console.error('Error in admin: Get-Doctors :-', error);
@@ -148,8 +148,8 @@ export const getAllDoctors = async (req: Request, res: Response) => {
 export const deleteDoctor = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const doctor = await exportJs.DOCTOR.findOne({ _id: id });
-    const result = await exportJs.DOCTOR.deleteOne({ _id: id });
+    const doctor = await DOCTOR.findOne({ _id: id });
+    const result = await DOCTOR.deleteOne({ _id: id });
 
     if (result.acknowledged) {
       res.status(200).send({ success: true, message: `DR. ${doctor.firstName} deleted succesfully` });
@@ -166,7 +166,7 @@ export const addDepartment = async (req: Request, res: Response) => {
   try {
     //* Finding if the Department already exists or not
     const { name } = req.body;
-    const deptExists = await exportJs.DEPARTMENT.findOne({ name });
+    const deptExists = await DEPARTMENT.findOne({ name });
     if (deptExists) {
       //* if department exists returning error with code 200
       return res.status(200).send({ success: false, message: 'Department already exists' });
@@ -174,7 +174,7 @@ export const addDepartment = async (req: Request, res: Response) => {
 
     //* Adding To Database
 
-    const newDept = new exportJs.DEPARTMENT({ name });
+    const newDept = new DEPARTMENT({ name });
     const result = await newDept.save();
 
     if (result) {
@@ -199,7 +199,7 @@ export const addBlog = async (req: Request, res: Response) => {
       imageURL: req.body.imageURL,
     };
 
-    const blog = new exportJs.BLOG(blogData);
+    const blog = new BLOG(blogData);
     await blog.save();
 
     return res.status(200).send({ success: true, message: 'Blog adding successfull' });
@@ -216,7 +216,7 @@ export const getSingleBlog = async (req: Request, res: Response) => {
     const id = req.params?.id;
     console.log(req.params?.id);
 
-    const blogData = await exportJs.BLOG.findOne({ _id: id });
+    const blogData = await BLOG.findOne({ _id: id });
 
     if (!blogData) return res.status(401).send({ success: false, message: 'no blog data found' });
 
@@ -234,7 +234,7 @@ export const editBlog = async (req: Request, res: Response) => {
     const { id }: { id?: string } = req.params;
 
     const data = req.body;
-    const result = await exportJs.BLOG.updateOne({ _id: id }, data);
+    const result = await BLOG.updateOne({ _id: id }, data);
     if (result.acknowledged) res.status(200).send({ success: true, message: 'Edit Blog Successfull' });
   } catch (error) {
     console.log(error);
@@ -247,7 +247,7 @@ export const editBlog = async (req: Request, res: Response) => {
 export const deleteBlog = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const result = await exportJs.BLOG.deleteOne({ _id: id });
+    const result = await BLOG.deleteOne({ _id: id });
 
     if (result.acknowledged) {
       res.status(200).send({ success: true, message: 'delete blog Successful' });
@@ -269,7 +269,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
       limit: 6,
     };
 
-    const data = await exportJs.USER.paginate({}, options);
+    const data = await USER.paginate({}, options);
 
     res.status(200).send({ success: true, message: 'get all users succesfull', data });
   } catch (error) {
@@ -282,7 +282,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
 export const getDoctorReports = async (req: Request, res: Response) => {
   try {
-    const doctorReports = await exportJs.REPORT_DOCTOR.find({});
+    const doctorReports = await REPORT_DOCTOR.find({});
     res.status(200).send({ success: true, message: 'get doctor reports successfull', doctorReports });
   } catch (error) {
     console.log(error);
@@ -294,7 +294,7 @@ export const getDoctorReports = async (req: Request, res: Response) => {
 
 export const getUserFeedbacks = async (req: Request, res: Response) => {
   try {
-    const feedbacks = await exportJs.FEEDBACK.find({});
+    const feedbacks = await FEEDBACK.find({});
     res.status(200).send({ success: true, message: 'Get Feedbacks Successfull', feedbacks });
   } catch (error) {
     console.log(error);
@@ -302,87 +302,87 @@ export const getUserFeedbacks = async (req: Request, res: Response) => {
   }
 };
 
-// //* Get Payments List
+//* Get Payments List
 
-// export const getPaymentsList = async (req: Request, res: Response) => {
-//   try {
-//     const PAGE_SIZE = 8;
-//     const options = {
-//       limit: PAGE_SIZE,
-//     };
-//     let charges;
-//     const { page } = req.query;
+export const getPaymentsList = async (req: Request, res: Response) => {
+  try {
+    const PAGE_SIZE = 8;
+    const options = {
+      limit: PAGE_SIZE,
+    };
+    let charges;
+    const { page } = req.query;
 
-//     if (page === 'next' && req.query.lastPaymentId) {
-//       //* To get the next page of charges
+    if (page === 'next' && req.query.lastPaymentId) {
+      //* To get the next page of charges
 
-//       charges = await stripe.charges.list({
-//         ...options,
-//         starting_after: req.query.lastPaymentId,
-//       });
-//     } else if (page === 'prev' && req.query.firstPaymentId) {
-//       //* To get the previous page of charges
+      charges = await stripe.charges.list({
+        ...options,
+        starting_after: req.query.lastPaymentId as string,
+      });
+    } else if (page === 'prev' && req.query.firstPaymentId) {
+      //* To get the previous page of charges
 
-//       charges = await stripe.charges.list({
-//         ...options,
-//         ending_before: req.query.firstPaymentId,
-//       });
-//     } else {
-//       //* To get the first page of charges
+      charges = await stripe.charges.list({
+        ...options,
+        ending_before: req.query.firstPaymentId as string,
+      });
+    } else {
+      //* To get the first page of charges
 
-//       charges = await stripe.charges.list(options);
-//     }
+      charges = await stripe.charges.list(options);
+    }
 
-//     res.status(200).send({ success: true, message: 'Get Payments Successful', payments: charges });
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).send({ success: false, message: 'Internal Server Error' });
-//   }
-// };
+    res.status(200).send({ success: true, message: 'Get Payments Successful', payments: charges });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ success: false, message: 'Internal Server Error' });
+  }
+};
 
-// //* Get Payments refund List
+//* Get Payments refund List
 
-// export const getPaymentsRefundList = async (req: Request, res: Response) => {
-//   try {
-//     const PAGE_SIZE = 3;
-//     const options = {
-//       limit: PAGE_SIZE,
-//     };
-//     let refunds;
-//     const { page } = req.query;
+export const getPaymentsRefundList = async (req: Request, res: Response) => {
+  try {
+    const PAGE_SIZE = 3;
+    const options = {
+      limit: PAGE_SIZE,
+    };
+    let refunds;
+    const { page } = req.query;
 
-//     if (page === 'next' && req.query.lastRefundId) {
-//       //* To get the next page of refunds
+    if (page === 'next' && req.query.lastRefundId) {
+      //* To get the next page of refunds
 
-//       refunds = await stripe.refunds.list({
-//         ...options,
-//         starting_after: req.query.lastRefundId,
-//       });
-//     } else if (page === 'prev' && req.query.firstRefundId) {
-//       //* To get the previous page of refunds
+      refunds = await stripe.refunds.list({
+        ...options,
+        starting_after: req.query.lastRefundId as string,
+      });
+    } else if (page === 'prev' && req.query.firstRefundId) {
+      //* To get the previous page of refunds
 
-//       refunds = await stripe.refunds.list({
-//         ...options,
-//         ending_before: req.query.firstRefundId,
-//       });
-//     } else {
-//       //* To get the first page of refunds
+      refunds = await stripe.refunds.list({
+        ...options,
+        ending_before: req.query.firstRefundId as string,
+      });
+    } else {
+      //* To get the first page of refunds
 
-//       refunds = await stripe.refunds.list(options);
-//     }
+      refunds = await stripe.refunds.list(options);
+    }
 
-//     res.status(200).send({ success: true, message: 'Get Refunds Successful', refunds });
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).send({ success: false, message: 'Internal Server Error' });
-//   }
-// };
+    res.status(200).send({ success: true, message: 'Get Refunds Successful', refunds });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ success: false, message: 'Internal Server Error' });
+  }
+};
 
 //* get revenue
 
 export const getRevenue = async (req: Request, res: Response) => {
   try {
-    const revenue = await exportJs.APPOINTMENT.aggregate([
+    const revenue = await APPOINTMENT.aggregate([
       { $match: { cancelled: false, payment: true } },
       { $group: { _id: null, totalPrice: { $sum: { $toInt: '$price' } } } },
     ]);
@@ -393,7 +393,7 @@ export const getRevenue = async (req: Request, res: Response) => {
     const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
 
     // group appointments by date and sum up prices
-    const result = await exportJs.APPOINTMENT.aggregate([
+    const result = await APPOINTMENT.aggregate([
       {
         $match: {
           date: { $gte: startOfDay, $lt: endOfDay },
@@ -418,8 +418,8 @@ export const getRevenue = async (req: Request, res: Response) => {
 
 export const totalAppoinmtent = async (req: Request, res: Response) => {
   try {
-    const maleCount: number = await exportJs.APPOINTMENT.countDocuments({ gender: 'male' });
-    const femaleCount: number = await exportJs.APPOINTMENT.countDocuments({ gender: 'female' });
+    const maleCount: number = await APPOINTMENT.countDocuments({ gender: 'male' });
+    const femaleCount: number = await APPOINTMENT.countDocuments({ gender: 'female' });
     const total: number = maleCount + femaleCount;
     const data = {
       maleCount,
@@ -438,11 +438,56 @@ export const totalAppoinmtent = async (req: Request, res: Response) => {
 
 export const getTotalDoctors = async (req: Request, res: Response) => {
   try {
-    const doctorsCount: number = await exportJs.DOCTOR.countDocuments({}, {});
+    const doctorsCount: number = await DOCTOR.countDocuments({}, {});
 
     res.status(200).send({ success: true, message: 'get revenue successfull', doctorsCount });
   } catch (error) {
     console.log(error);
+    res.status(500).send({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+export const getMonthlyRevenue = async (req: Request, res: Response) => {
+  try {
+    const result = await APPOINTMENT.aggregate([
+      {
+        $match: {
+          active: true,
+          payment: true,
+          cancelled: false,
+        },
+      },
+      {
+        $group: {
+          _id: {
+            month: { $month: { $toDate: '$date' } },
+            year: { $year: { $toDate: '$date' } },
+          },
+          revenue: { $sum: { $toDouble: '$price' } },
+        },
+      },
+      {
+        $sort: {
+          '_id.year': 1,
+          '_id.month': 1,
+        },
+      },
+    ]);
+
+    // Create an array of zeros for all months
+    const monthlyRevenueArray = Array(12).fill(0);
+
+    // Populate the revenue values for available months
+    result.forEach((item) => {
+      const monthIndex = item._id.month - 1;
+      monthlyRevenueArray[monthIndex] = item.revenue;
+    });
+
+    console.log(monthlyRevenueArray);
+
+    return res.status(200).send({ success: true, message: 'get revenue successfull', data: monthlyRevenueArray });
+  } catch (error) {
+    console.error('Error:', error);
     res.status(500).send({ success: false, message: 'Internal Server Error' });
   }
 };

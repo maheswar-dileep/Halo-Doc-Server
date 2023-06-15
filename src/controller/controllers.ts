@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { BLOG, DEPARTMENT, DOCTOR } from '../model/export.js';
+import { BLOG, DEPARTMENT, DOCTOR } from '../model/index.js';
 import { Ioptions } from '../Types/interface.js';
 
 //* Get-all-blogs

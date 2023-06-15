@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import { Request, Response } from 'express';
 import Stripe from 'stripe';
 import jwt from 'jsonwebtoken';
-import * as exportJs from '../model/export.js';
+import * as exportJs from '../model/index.js';
 import verifyFirebaseToken from '../config/firebase.js';
 import mailService from '../utils/nodemailer.js';
 import { IAppointment, IUser } from '../Types/interface.js';

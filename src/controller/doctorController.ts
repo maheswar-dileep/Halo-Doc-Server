@@ -3,9 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import Stripe from 'stripe';
 import mongoose from 'mongoose';
-import {
-  APPOINTMENT, BLOG, DOCTOR, USER,
-} from '../model/export.js';
+import { APPOINTMENT, BLOG, DOCTOR, USER } from '../model/index.js';
 import { IBlog } from '../Types/interface.js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET, {
@@ -15,7 +13,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET, {
 //* Login
 
 interface IDoctor {
-  _id:string;
+  _id: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -313,14 +311,7 @@ export const cancelLeave = async (req: Request, res: Response) => {
 
 export const addPrescription = async (req: Request, res: Response) => {
   try {
-    const {
-      id,
-      medicine,
-      dosage,
-      notes,
-      doctor,
-      date,
-    } = req.body;
+    const { id, medicine, dosage, notes, doctor, date } = req.body;
 
     const user = await USER.findOne({ _id: new mongoose.Types.ObjectId(id) });
     if (!user) return res.status(404).send({ success: false, message: 'Prescription not found with id' });
@@ -340,5 +331,88 @@ export const addPrescription = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error in doctor: add prescription :-', error);
     return res.status(500).send({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+//* monthly report
+
+export const monthlyReport = async (req, res) => {
+  try {
+    const doctorId = req.doctor;
+
+    const result = await APPOINTMENT.aggregate([
+      {
+        $match: {
+          doctorId: new mongoose.Types.ObjectId(doctorId),
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $month: '$date',
+          },
+          totalAmount: {
+            $sum: '$price',
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          month: '$_id',
+          totalAmount: 1,
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          data: {
+            $push: {
+              month: '$month',
+              totalAmount: '$totalAmount',
+            },
+          },
+        },
+      },
+      {
+        $unwind: {
+          path: '$data',
+          includeArrayIndex: 'index',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $group: {
+          _id: '$data.month',
+          totalAmount: {
+            $max: '$data.totalAmount',
+          },
+        },
+      },
+      {
+        $sort: {
+          _id: 1,
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          month: '$_id',
+          totalAmount: {
+            $ifNull: ['$totalAmount', 0],
+          },
+        },
+      },
+    ]);
+
+    const months = Array.from(Array(12), (_, i) => i + 1); // Generate an array of months (1 to 12)
+    const prices = months.map((month) => {
+      const resultItem = result.find((item) => item.month === month);
+      return resultItem ? resultItem.totalAmount : 0;
+    });
+
+    res.status(200).send(prices);
+  } catch (error) {
+    res.status(500).json({ error: 'Unable to retrieve the data' });
   }
 };

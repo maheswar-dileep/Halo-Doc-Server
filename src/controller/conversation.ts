@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { CONVERSATION } from '../model/export.js';
+import { CONVERSATION } from '../model/index.js';
 
 //* conversation controller
 
