@@ -23,6 +23,7 @@ router.route('/webhook').post(auth, controller.webHooks);
 
 router.route('/appointment/cancel-appointment/:id').patch(auth, controller.cancelAppointment);
 router.route('/check-available-timing').post(auth, controller.checkAvailableTiming);
+router.route('/get-appointments/:id').get(auth, controller.getAppointment);
 
 //* report / feedback
 

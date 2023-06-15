@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import { Request, Response } from 'express';
 import Stripe from 'stripe';
 import jwt from 'jsonwebtoken';
-import { USER, APPOINTMENT, DOCTOR, REPORT_DOCTOR, FEEDBACK } from '../model/export.js';
+import * as exportJs from '../model/export.js';
 import verifyFirebaseToken from '../config/firebase.js';
 import mailService from '../utils/nodemailer.js';
 import { IAppointment, IUser } from '../Types/interface.js';
@@ -31,7 +31,7 @@ export const signup = async (req: Request, res: Response) => {
 
     // * Saving userData to Database
 
-    const newUser = new USER(userData);
+    const newUser = new exportJs.USER(userData);
     const response = await newUser.save();
     const id = response?._id;
     const token = jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -63,7 +63,7 @@ export const login = async (req: Request, res: Response) => {
     const user = await verifyFirebaseToken({ idToken });
 
     if (user) {
-      const userData = await USER.findOne({ email: user?.email });
+      const userData = await exportJs.USER.findOne({ email: user?.email });
 
       const id = userData?._id;
       const token = jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -88,7 +88,7 @@ export const login = async (req: Request, res: Response) => {
 export const getUserInfo = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const user = await USER.findById(id).exec();
+    const user = await exportJs.USER.findById(id).exec();
 
     return res.status(200).send({ success: true, message: 'get user successful', data: user });
   } catch (error) {
@@ -102,7 +102,7 @@ export const getUserInfo = async (req: Request, res: Response) => {
 export const getDoctorsbyDept = async (req: Request, res: Response) => {
   try {
     const { department } = req.query;
-    const doctors = await DOCTOR.find({ department });
+    const doctors = await exportJs.DOCTOR.find({ department });
     return res.status(200).send({ success: true, message: 'Get doctors by department successful', data: doctors });
   } catch (error) {
     console.log(error);
@@ -142,7 +142,7 @@ export const webHooks = async (req: Request, res: Response) => {
         const customer = await stripe.customers.retrieve(data.customer);
         // eslint-disable-next-line @typescript-eslint/dot-notation
         const appointments = customer?.['metadata']?.appointments;
-        const newAppointment = new APPOINTMENT(JSON.parse(appointments));
+        const newAppointment = new exportJs.APPOINTMENT(JSON.parse(appointments));
         newAppointment.save();
       }
     } catch (error) {
@@ -160,7 +160,7 @@ export const payment = async (req: Request, res: Response) => {
   try {
     const bodyData = req.body;
     try {
-      const newAppointment = new APPOINTMENT(bodyData);
+      const newAppointment = new exportJs.APPOINTMENT(bodyData);
       newAppointment.save();
 
       const customer = await stripe.customers.create({
@@ -210,7 +210,7 @@ export const cancelAppointment = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const appointment: any = await APPOINTMENT.find({ _id: id });
+    const appointment: any = await exportJs.APPOINTMENT.find({ _id: id });
     if (!appointment) return res.status(200).send({ success: false, message: 'Appointment not found' });
 
     await stripe.refunds.create({
@@ -230,7 +230,7 @@ export const cancelAppointment = async (req: Request, res: Response) => {
 export const checkAvailableTiming = async (req: Request, res: Response) => {
   try {
     const { date, doctorId } = req.body;
-    const response = await APPOINTMENT.find({ date, doctorId }).select('time').exec();
+    const response = await exportJs.APPOINTMENT.find({ date, doctorId }).select('time').exec();
     return res.status(200).send({ success: true, message: 'Check Availability Successful', data: response });
   } catch (error) {
     console.log(error);
@@ -244,7 +244,7 @@ export const reportDoctor = async (req: Request, res: Response) => {
   try {
     const { userId, doctorId, reason } = req.body;
 
-    const newReport = await new REPORT_DOCTOR({ userId, doctorId, reason });
+    const newReport = await new exportJs.REPORT_DOCTOR({ userId, doctorId, reason });
     await newReport.save();
 
     return res.status(200).send({ success: true, message: 'doctor reported Successfully' });
@@ -260,7 +260,7 @@ export const createFeedback = async (req: Request, res: Response) => {
   try {
     const { doctorId, userId, rating, feedback } = req.body;
 
-    const newFeedback = await new FEEDBACK({
+    const newFeedback = await new exportJs.FEEDBACK({
       doctorId,
       userId,
       rating,
@@ -280,7 +280,7 @@ export const updateProfile = async (req: Request, res: Response) => {
     const { id } = req.params;
     if (!id) return res.status(406).send({ success: false, message: 'Invalid token' });
 
-    const user: IUser | null = await USER.findById(id);
+    const user: IUser | null = await exportJs.USER.findById(id);
     if (!user) return res.status(404).send({ success: false, message: 'User not found' });
 
     const { name, email } = req.body;
@@ -290,11 +290,24 @@ export const updateProfile = async (req: Request, res: Response) => {
       email: email || user.email,
     };
 
-    await USER.findByIdAndUpdate(id, data);
+    await exportJs.USER.findByIdAndUpdate(id, data);
 
     return res.status(200).send({ success: true, message: 'Update profile successful' });
   } catch (error) {
     console.error('Error in user controller: Update Profile :-', error);
     return res.status(500).send({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+export const getAppointment = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const appointments = await exportJs.APPOINTMENT.find({ userId: id });
+
+    res.status(200).send({ success: true, message: 'get user appointments successful', data: appointments });
+  } catch (error) {
+    console.log('Error in get user Appointment', error);
+    res.status(500).send({ success: false, message: 'internal server error' });
   }
 };
