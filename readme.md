@@ -1,4 +1,4 @@
-# Project Title
+# Halo-Doc
 
 Halo-Doc is an online Doctor Consultancy Platform complete with real-time chat using Socket.IO and seamless video calling functionality. The platform is designed to offer a seamless and secure experience to both doctors and patients, making remote healthcare accessible to everyone.
 
