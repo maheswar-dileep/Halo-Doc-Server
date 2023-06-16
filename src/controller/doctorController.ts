@@ -334,85 +334,46 @@ export const addPrescription = async (req: Request, res: Response) => {
   }
 };
 
-//* monthly report
+//* get monthly revenue
 
-export const monthlyReport = async (req, res) => {
+export const getMontlyRevenue = async (req: Request, res: Response) => {
   try {
-    const doctorId = req.doctor;
+    const { id } = req.params;
 
     const result = await APPOINTMENT.aggregate([
       {
         $match: {
-          doctorId: new mongoose.Types.ObjectId(doctorId),
+          doctorId: id,
+          cancelled: false,
         },
       },
       {
         $group: {
           _id: {
-            $month: '$date',
+            month: { $month: { $toDate: '$date' } },
+            year: { $year: { $toDate: '$date' } },
           },
-          totalAmount: {
-            $sum: '$price',
-          },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          month: '$_id',
-          totalAmount: 1,
-        },
-      },
-      {
-        $group: {
-          _id: null,
-          data: {
-            $push: {
-              month: '$month',
-              totalAmount: '$totalAmount',
-            },
-          },
-        },
-      },
-      {
-        $unwind: {
-          path: '$data',
-          includeArrayIndex: 'index',
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
-        $group: {
-          _id: '$data.month',
-          totalAmount: {
-            $max: '$data.totalAmount',
-          },
+          revenue: { $sum: { $toDouble: '$price' } },
         },
       },
       {
         $sort: {
-          _id: 1,
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          month: '$_id',
-          totalAmount: {
-            $ifNull: ['$totalAmount', 0],
-          },
+          '_id.year': 1,
+          '_id.month': 1,
         },
       },
     ]);
 
-    const months = Array.from(Array(12), (_, i) => i + 1); // Generate an array of months (1 to 12)
-    const prices = months.map((month) => {
-      const resultItem = result.find((item) => item.month === month);
-      return resultItem ? resultItem.totalAmount : 0;
+    const monthlyRevenueArray = Array(12).fill(0);
+
+    result.forEach((item) => {
+      const monthIndex = item._id.month - 1;
+      monthlyRevenueArray[monthIndex] = item.revenue;
     });
 
-    res.status(200).send(prices);
+    res.status(200).send({ success: true, message: 'get Revenue Successfull', data: result });
   } catch (error) {
+    console.log('error in get monthly revenue', error);
     res.status(500).json({ error: 'Unable to retrieve the data' });
   }
 };

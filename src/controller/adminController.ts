@@ -383,7 +383,7 @@ export const getPaymentsRefundList = async (req: Request, res: Response) => {
 export const getRevenue = async (req: Request, res: Response) => {
   try {
     const revenue = await APPOINTMENT.aggregate([
-      { $match: { cancelled: false, payment: true } },
+      { $match: { cancelled: false } },
       { $group: { _id: null, totalPrice: { $sum: { $toInt: '$price' } } } },
     ]);
 
@@ -452,8 +452,6 @@ export const getMonthlyRevenue = async (req: Request, res: Response) => {
     const result = await APPOINTMENT.aggregate([
       {
         $match: {
-          active: true,
-          payment: true,
           cancelled: false,
         },
       },
@@ -474,16 +472,12 @@ export const getMonthlyRevenue = async (req: Request, res: Response) => {
       },
     ]);
 
-    // Create an array of zeros for all months
     const monthlyRevenueArray = Array(12).fill(0);
 
-    // Populate the revenue values for available months
     result.forEach((item) => {
       const monthIndex = item._id.month - 1;
       monthlyRevenueArray[monthIndex] = item.revenue;
     });
-
-    console.log(monthlyRevenueArray);
 
     return res.status(200).send({ success: true, message: 'get revenue successfull', data: monthlyRevenueArray });
   } catch (error) {

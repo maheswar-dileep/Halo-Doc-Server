@@ -13,11 +13,10 @@ router.route('/login').post(controller.login);
 router.route('/appointment/get-appointments/:id').get(auth, controller.getAppointments);
 router.route('/appointment/cancel-appointment/:id').patch(controller.cancelAppointment);
 
-//* get routes
+//* get data
 router.route('/get-doctor/:id').get(controller.getDoctor);
 router.route('/edit-doctor/:id').patch(controller.editDoctor);
 router.route('/patients/:id').get(controller.getPatients);
-router.route('/get-total-revenue/:id').get(controller.getTotalRevenue);
 
 //* Add Prescription
 
@@ -27,5 +26,10 @@ router.route('/add-prescription').post(controller.addPrescription);
 
 router.route('/apply-leave').patch(controller.applyLeave);
 router.route('/cancel-leave').patch(controller.cancelLeave);
+
+//* analytics
+
+router.route('/get-total-revenue/:id').get(controller.getTotalRevenue);
+router.route('/get-monthly-revenue/:id').get(controller.getMontlyRevenue);
 
 export default router;
