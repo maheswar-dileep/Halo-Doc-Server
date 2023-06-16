@@ -196,11 +196,6 @@ export const getPatients = async (req: Request, res: Response) => {
     const id = req.params?.id;
     const patients = await APPOINTMENT.aggregate([
       {
-        $match: {
-          doctorId: new mongoose.Types.ObjectId(id),
-        },
-      },
-      {
         $group: {
           _id: '$doctorId',
           male: {
@@ -238,11 +233,6 @@ export const getTotalRevenue = async (req: Request, res: Response) => {
   try {
     const id = req.params?.id;
     const revenue = await APPOINTMENT.aggregate([
-      {
-        $match: {
-          doctorId: new mongoose.Types.ObjectId(id),
-        },
-      },
       {
         $group: {
           _id: null,
@@ -342,12 +332,6 @@ export const getMontlyRevenue = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     const result = await APPOINTMENT.aggregate([
-      {
-        $match: {
-          doctorId: id,
-          cancelled: false,
-        },
-      },
       {
         $group: {
           _id: {
