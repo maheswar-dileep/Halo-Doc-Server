@@ -193,11 +193,11 @@ export const getAllDoctors = async (req: Request, res: Response) => {
 
 export const getPatients = async (req: Request, res: Response) => {
   try {
+    const id = req.params?.id;
     const patients = await APPOINTMENT.aggregate([
       {
         $match: {
-          // cancelled: false,
-          doctorId: new mongoose.Types.ObjectId(req.params.id),
+          doctorId: new mongoose.Types.ObjectId(id),
         },
       },
       {
@@ -236,10 +236,11 @@ export const getPatients = async (req: Request, res: Response) => {
 
 export const getTotalRevenue = async (req: Request, res: Response) => {
   try {
+    const id = req.params?.id;
     const revenue = await APPOINTMENT.aggregate([
       {
         $match: {
-          doctorId: new mongoose.Types.ObjectId(req.params.id),
+          doctorId: new mongoose.Types.ObjectId(id),
         },
       },
       {
