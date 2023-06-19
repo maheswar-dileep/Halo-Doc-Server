@@ -28,6 +28,25 @@ Add environment variables
 ``` 
 add environment variables
 
+```bash
+MONGODB_URL = <--mongodb_url-->
+JWT_SECRET = "$2b$10$.XeHdd3KmOWvRK.ase5GJuRKhQduYNo5wPJpPqXAUhQvD4cNrQGe2"
+
+#PAYMENT
+STRIPE_SECRET = <--stripe-secret-->
+STRIPE_END_POINT_SECRET = <--stripe-endpoint-secret-->
+
+CLIENT_URL = <--client url-->
+
+### nodemailer
+
+SMTP_USER = <--gmail-->
+SMTP_PASS = <--password-->
+
+
+GOOGLE_APPLICATION_CREDENTIALS = keys\FIREBASE.json
+
+```
 ## Run Locally
 
 Build the application
