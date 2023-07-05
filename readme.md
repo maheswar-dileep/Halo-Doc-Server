@@ -63,4 +63,4 @@ Start the server
 
 ## Tech Stack
 
-`typescript`  `node.js`  `express`  `mongodb`  `mongoose`  `nodemailer`  `JWT`  `cloudinary`  `socket.io`  `eslit`  `firebase`  `stripe payment`  `zego cloud api`  
+`typescript`  `node.js`  `express`  `mongodb`  `mongoose`  `nodemailer`  `JWT`  `Cloudinary`  `socket.io`  `eslint`  `firebase`  `stripe payment`  `zego cloud API  
