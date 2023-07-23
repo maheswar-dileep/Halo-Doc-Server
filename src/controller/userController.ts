@@ -35,7 +35,7 @@ export const signup = async (req: Request, res: Response) => {
     const response = await newUser.save();
     const id = response?._id;
     const token = jwt.sign({ id }, process.env.JWT_SECRET, {
-      expiresIn: '1d',
+      expiresIn: '15d',
     });
 
     mailService('welcome', user.email);
@@ -258,7 +258,9 @@ export const reportDoctor = async (req: Request, res: Response) => {
 
 export const createFeedback = async (req: Request, res: Response) => {
   try {
-    const { doctorId, userId, rating, feedback } = req.body;
+    const {
+      doctorId, userId, rating, feedback,
+    } = req.body;
 
     const newFeedback = await new exportJs.FEEDBACK({
       doctorId,

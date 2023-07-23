@@ -11,15 +11,17 @@ const auth = async (req: RequestDefenition, res: Response, next: NextFunction) =
 
     if (!token) return res.status(401).send({ success: false, message: 'Missing Token' });
 
+    // eslint-disable-next-line max-len
     jwt.verify(token, process.env.JWT_SECRET, (err: VerifyErrors | null, decoded: string | JwtPayload) => {
       if (err) return res.status(401).send({ success: false, message: 'Invalid Token' });
+      // eslint-disable-next-line @typescript-eslint/dot-notation
       req.user = { id: decoded['id'] };
 
       next();
     });
   } catch (error) {
     console.error('Error in auth midleware :-', error);
-    res.status(500).send({ success: false, message: 'Internal Server Error' });
+   return res.status(500).send({ success: false, message: 'Internal Server Error' });
   }
 };
 

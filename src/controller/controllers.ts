@@ -22,6 +22,19 @@ export const getAllBlogs = async (req: Request, res: Response) => {
   }
 };
 
+export const getBlogs = async (req: Request, res: Response) => {
+  try {
+    const id = req.params;
+
+    const blog = BLOG.find({ _id: id });
+
+    return res.status(200).send({ success: true, message: 'get blog successful', data: blog });
+  } catch (error) {
+    console.log('Error in common controller: Get-blog :-', error);
+    return res.status(500).send({ success: false, message: 'Internal server error' });
+  }
+};
+
 export const getAllDoctors = async (req: Request, res: Response) => {
   try {
     const { page } = req.query;
