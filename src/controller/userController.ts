@@ -26,7 +26,7 @@ export const signup = async (req: Request, res: Response) => {
     const userData = {
       name: user.displayName,
       email: user.email,
-      profileURL: user.photoURL ? user?.photoURL : false,
+      profileURL: user?.photoURL ? user?.photoURL : false,
     };
 
     // * Saving userData to Database
