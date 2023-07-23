@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import * as exportJs from '../model/index.js';
 import verifyFirebaseToken from '../config/firebase.js';
 import mailService from '../utils/nodemailer.js';
-import { IAppointment, IUser } from '../Types/interface.js';
+import { IUser } from '../Types/interface.js';
 
 dotenv.config();
 const stripe = new Stripe(process.env.STRIPE_SECRET, {
@@ -258,9 +258,7 @@ export const reportDoctor = async (req: Request, res: Response) => {
 
 export const createFeedback = async (req: Request, res: Response) => {
   try {
-    const {
-      doctorId, userId, rating, feedback,
-    } = req.body;
+    const { doctorId, userId, rating, feedback } = req.body;
 
     const newFeedback = await new exportJs.FEEDBACK({
       doctorId,
