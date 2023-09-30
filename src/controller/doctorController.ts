@@ -3,7 +3,9 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import Stripe from 'stripe';
 import mongoose from 'mongoose';
-import { APPOINTMENT, BLOG, DOCTOR, USER } from '../model/index.js';
+import {
+  APPOINTMENT, BLOG, DOCTOR, USER,
+} from '../model/index.js';
 import { IBlog } from '../Types/interface.js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET, {
@@ -41,10 +43,8 @@ export const login = async (req: Request, res: Response) => {
     const match = await bcrypt.compare(password, doctor.password);
 
     if (match) {
-      // Credential verified
-      // Creating a JWT token
       const token: string = jwt.sign({ id: doctor._id }, process.env.JWT_SECRET, {
-        expiresIn: '10d',
+        expiresIn: '15d',
       });
       doctor.password = null;
       return res.status(200).send({
@@ -302,7 +302,9 @@ export const cancelLeave = async (req: Request, res: Response) => {
 
 export const addPrescription = async (req: Request, res: Response) => {
   try {
-    const { id, medicine, dosage, notes, doctor, date } = req.body;
+    const {
+      id, medicine, dosage, notes, doctor, date,
+    } = req.body;
 
     const user = await USER.findOne({ _id: new mongoose.Types.ObjectId(id) });
     if (!user) return res.status(404).send({ success: false, message: 'Prescription not found with id' });

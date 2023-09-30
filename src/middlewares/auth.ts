@@ -11,6 +11,7 @@ const auth = async (req: RequestDefenition, res: Response, next: NextFunction) =
 
     if (!token) return res.status(401).send({ success: false, message: 'Missing Token' });
 
+    // eslint-disable-next-line max-len
     jwt.verify(token, process.env.JWT_SECRET, (err: VerifyErrors | null, decoded: string | JwtPayload) => {
       if (err) return res.status(401).send({ success: false, message: 'Invalid Token' });
       req.user = { id: decoded?.['id'] };

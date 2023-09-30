@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import * as exportJs from '../model/index.js';
 import verifyFirebaseToken from '../config/firebase.js';
 import mailService from '../utils/nodemailer.js';
-import { IAppointment, IUser } from '../Types/interface.js';
+import { IUser } from '../Types/interface.js';
 
 dotenv.config();
 const stripe = new Stripe(process.env.STRIPE_SECRET, {
@@ -35,7 +35,7 @@ export const signup = async (req: Request, res: Response) => {
     const response = await newUser.save();
     const id = response?._id;
     const token = jwt.sign({ id }, process.env.JWT_SECRET, {
-      expiresIn: '1d',
+      expiresIn: '15d',
     });
 
     mailService('welcome', user.email);
